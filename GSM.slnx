@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="GSM.API/GSM.API.csproj" />
+  <Project Path="GSM.AppHost/GSM.AppHost.csproj" Id="10edcbb6-c600-4c40-a4a5-27d36d7b2060" />
+  <Project Path="GSM.Application/GSM.Application.csproj" Id="c6c7cff8-236e-49ed-803a-b807ce384db6" />
+  <Project Path="GSM.Domain/GSM.Domain.csproj" Id="bcb689b6-52ab-43dc-a964-3c0d2b43f0ce" />
+  <Project Path="GSM.Infrastructure/GSM.Infrastructure.csproj" Id="9bd5abab-aa9a-450e-aea8-c37fe018a52e" />
+  <Project Path="GSM.WEB/gsm.web.esproj">
+    <Build />
+    <Deploy />
+  </Project>
+</Solution>
