@@ -20,7 +20,24 @@ namespace GSM.Infrastructure.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<WagonReceipt>()
+            .HasOne(wr => wr.Tank)
+            .WithMany() 
+            .HasForeignKey(wr => wr.TankId)
+            .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<WagonReceipt>()
+                .HasOne(wr => wr.Product)
+                .WithMany()
+                .HasForeignKey(wr => wr.ProductId)
+                .OnDelete(DeleteBehavior.Restrict); 
+
+           
+            modelBuilder.Entity<WagonReceipt>()
+                .HasOne(wr => wr.User)
+                .WithMany()
+                .HasForeignKey(wr => wr.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 
     }

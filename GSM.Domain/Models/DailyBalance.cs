@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace GSM.Domain.Models
@@ -10,6 +11,7 @@ namespace GSM.Domain.Models
         [Key]
         public int DailyBalanceId { get; set; }
         public DateOnly BalanceDate { get; set;  }
+        [ForeignKey(nameof(TankId))]
         public int TankId { get; set;  }
         public Tank Tank { get; set; }
         public decimal OpeningVolume { get; set; }

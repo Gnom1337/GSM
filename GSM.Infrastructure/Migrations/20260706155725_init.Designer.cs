@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GSM.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260627214936_init")]
+    [Migration("20260706155725_init")]
     partial class init
     {
         /// <inheritdoc />
@@ -337,7 +337,7 @@ namespace GSM.Infrastructure.Migrations
                     b.HasOne("GSM.Domain.Models.Product", "Product")
                         .WithMany()
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("GSM.Domain.Models.Tank", "Tank")
@@ -349,7 +349,7 @@ namespace GSM.Infrastructure.Migrations
                     b.HasOne("GSM.Domain.Models.User", "User")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
