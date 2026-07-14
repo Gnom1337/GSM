@@ -1,0 +1,47 @@
+﻿using GSM.Application.Queries.DailyBalanceQueries;
+using GSM.Application.Responses;
+using GSM.Domain.Interfaces;
+using GSM.Domain.Models;
+using MediatR;
+using Microsoft.IdentityModel.Tokens;
+using System;
+using System.Collections.Generic;
+using System.Text;
+
+namespace GSM.Application.Handlers.DailyBalanceHandlers
+{
+    public class AddDailyBalanceQuerieHandler : IRequestHandler<AddDailyBalanceQuerie, BaseGetByIdResponse<DailyBalance>>
+    {
+        private readonly IUnitOfWork _unitOfWork;
+        public AddDailyBalanceQuerieHandler(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<BaseGetByIdResponse<DailyBalance>> Handle(AddDailyBalanceQuerie request, CancellationToken cancellationToken)
+        {
+            var tank = await _unitOfWork.TankRepository.GetById(request.TankId);
+            if (tank != null)
+            {
+                var result = await _unitOfWork.DailyBalanceRepository.AddAsync(new DailyBalance
+                {
+                    BalanceDate = request.BalanceDate,
+                    ClosingVolumeActual = request.ClosingVolumeActual,
+                    ClosingVolumeCalculated = request.ClosingVolumeCalculated,
+                    LossLiters = request.LossLiters,
+                    OpeningVolume = request.OpeningVolume,
+                    TotalDispatched = request.TotalDispatched,
+                    TotalReceived = request.TotalReceived,
+                    Tank = tank
+
+                });
+                await _unitOfWork.SaveChangesAsync();
+                return new BaseGetByIdResponse<DailyBalance> { Status = result.Status, Message = result.Message };
+            }
+            else
+            {
+                return new BaseGetByIdResponse<DailyBalance> { Status = "Error", Message = "Произошла ошибка" };
+            }
+        }
+    }
+}

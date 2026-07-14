@@ -15,10 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\GSM.Application\GSM.Application.csproj" />
     <ProjectReference Include="..\GSM.Infrastructure\GSM.Infrastructure.csproj" />
   </ItemGroup>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import {
   Alert,
   AppBar,
@@ -781,7 +781,7 @@ function LoginPage({ users, onLogin }) {
             <Typography variant="body2" color="text.secondary" gutterBottom>
               Тестовые учетные записи
             </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Stack direction="row" spacing={1}  useFlexGap>
               {users.map((user) => (
                 <Chip
                   key={user.userId}
@@ -1820,14 +1820,7 @@ function App() {
   const canEdit = currentUser && currentUser.roleName !== 'manager'
   const effectiveSection = activeSection === 'admin' && currentUser?.roleName !== 'admin' ? 'dashboard' : activeSection
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
-  }, [data])
 
-  useEffect(() => {
-    if (currentUserId) localStorage.setItem(SESSION_KEY, String(currentUserId))
-    else localStorage.removeItem(SESSION_KEY)
-  }, [currentUserId])
 
   const notify = (message, severity = 'success') => {
     setToast({ message, severity })

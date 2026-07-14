@@ -1,4 +1,22 @@
+using GSM.Application.Handlers.DailyBalanceHandlers;
+using GSM.Application.Handlers.DispatchHandlers;
+using GSM.Application.Handlers.ProductHandlers;
+using GSM.Application.Handlers.TankHandlers;
+using GSM.Application.Handlers.TankMeasurmentHandlers;
+using GSM.Application.Handlers.WagonReceiptHandlers;
+using GSM.Application.Queries;
+using GSM.Application.Queries.DailyBalanceQueries;
+using GSM.Application.Queries.DispatchQueries;
+using GSM.Application.Queries.ProductQueries;
+using GSM.Application.Queries.TankMeasurmentQueries;
+using GSM.Application.Queries.TankQueries;
+using GSM.Application.Queries.WagonReceiptQueries;
+using GSM.Application.Responses;
+using GSM.Domain.Interfaces;
+using GSM.Domain.Models;
 using GSM.Infrastructure.Data;
+using GSM.Infrastructure.Repository;
+using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +29,56 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(StartupBase).Assembly));
 builder.Services.AddDbContext<ApplicationDbContext>();
 builder.Services.AddAuthorization();
+//Tank
+builder.Services.AddScoped<IRepositoryBase<Tank>, RepositoryBase<Tank>>();
+builder.Services.AddTransient<IRequestHandler<AddTankQuerie, BaseGetByIdResponse<Tank>>, AddTankQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAllTanksQuerie, List<Tank>>, GetAllTanksQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>, DeleteTankQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<UpdateTankQuerie, BaseGetByIdResponse<Tank>>, UpdateTankQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<Tank>, BaseGetByIdResponse<Tank>>, GetTankByIdQuerieHandler>();
+//Product
+builder.Services.AddScoped<IRepositoryBase<Product>, RepositoryBase<Product>>();
+builder.Services.AddTransient<IRequestHandler<AddProductQuerie, BaseGetByIdResponse<Product>>, AddProductQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAllProductsQuerie, List<Product>>, GetAllProductsQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>, DeleteProductQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<UpdateProductQuerie, BaseGetByIdResponse<Product>>, UpdateProductQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<Product>, BaseGetByIdResponse<Product>>, GetProductByIdQuerieHandler>();
+
+//Dispatch
+builder.Services.AddScoped<IRepositoryBase<Dispatch>, RepositoryBase<Dispatch>>();
+builder.Services.AddTransient<IRequestHandler<AddDispatchQuerie, BaseGetByIdResponse<Dispatch>>, AddDispatchQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAllDispatchesQuerie, List<Dispatch>>, GetAllDispatchesQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<Dispatch>, BaseGetByIdResponse<Dispatch>>, DeleteDispatchQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<UpdateDispatchQuerie, BaseGetByIdResponse<Dispatch>>, UpdateDispatchQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<Dispatch>, BaseGetByIdResponse<Dispatch>>, GetDispatchByIdQuerieHandler>();
+
+//DailyBalance
+builder.Services.AddScoped<IRepositoryBase<DailyBalance>, RepositoryBase<DailyBalance>>();
+builder.Services.AddTransient<IRequestHandler<AddDailyBalanceQuerie, BaseGetByIdResponse<DailyBalance>>, AddDailyBalanceQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAllDailyBalancesQuerie, List<DailyBalance>>, GetAllDailyBalancesQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>, DeleteDailyBalanceQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<UpdateDailyBalanceQuerie, BaseGetByIdResponse<DailyBalance>>, UpdateDailyBalanceQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<DailyBalance>, BaseGetByIdResponse<DailyBalance>>, GetDailyBalanceByIdQuerieHandler>();
+
+
+//TankMeasurment
+builder.Services.AddScoped<IRepositoryBase<TankMeasurement>, RepositoryBase<TankMeasurement>>();
+builder.Services.AddTransient<IRequestHandler<AddTankMeasurmentQuerie, BaseGetByIdResponse<TankMeasurement>>, AddTankMeasurmentQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAllTankMeasurmentsQuerie, List<TankMeasurement>>, GetAllTankMeasurmentsQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<TankMeasurement>, BaseGetByIdResponse<TankMeasurement>>, DeleteTankMeasurmentQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<UpdateTankMeasurmentQuerie, BaseGetByIdResponse<TankMeasurement>>, UpdateTankMeasurmentQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<TankMeasurement>, BaseGetByIdResponse<TankMeasurement>>, GetTankMeasurmentByIdQuerieHandler>();
+
+
+//WagonReceipt
+builder.Services.AddScoped<IRepositoryBase<WagonReceipt>, RepositoryBase<WagonReceipt>>();
+builder.Services.AddTransient<IRequestHandler<AddWagonReceiptQuerie, BaseGetByIdResponse<WagonReceipt>>, AddWagonReceiptQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAllWagonReceiptsQuerie, List<WagonReceipt>>, GetAllWagonReceiptsQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>, DeleteWagonReceiptQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<UpdateWagonReceiptQuerie, BaseGetByIdResponse<WagonReceipt>>, UpdateWagonReceiptQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>, GetWagonReceiptByIdQuerieHandler>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
