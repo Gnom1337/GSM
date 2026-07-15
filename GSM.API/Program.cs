@@ -33,14 +33,14 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IRepositoryBase<Tank>, RepositoryBase<Tank>>();
 builder.Services.AddTransient<IRequestHandler<AddTankQuerie, BaseGetByIdResponse<Tank>>, AddTankQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<GetAllTanksQuerie, List<Tank>>, GetAllTanksQuerieHandler>();
-builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>, DeleteTankQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<Tank>, BaseDeleteResponse>, DeleteTankQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<UpdateTankQuerie, BaseGetByIdResponse<Tank>>, UpdateTankQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<Tank>, BaseGetByIdResponse<Tank>>, GetTankByIdQuerieHandler>();
 //Product
 builder.Services.AddScoped<IRepositoryBase<Product>, RepositoryBase<Product>>();
 builder.Services.AddTransient<IRequestHandler<AddProductQuerie, BaseGetByIdResponse<Product>>, AddProductQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<GetAllProductsQuerie, List<Product>>, GetAllProductsQuerieHandler>();
-builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>, DeleteProductQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<Product>, BaseDeleteResponse>, DeleteProductQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<UpdateProductQuerie, BaseGetByIdResponse<Product>>, UpdateProductQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<Product>, BaseGetByIdResponse<Product>>, GetProductByIdQuerieHandler>();
 
@@ -56,7 +56,7 @@ builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<Dispatch>, BaseG
 builder.Services.AddScoped<IRepositoryBase<DailyBalance>, RepositoryBase<DailyBalance>>();
 builder.Services.AddTransient<IRequestHandler<AddDailyBalanceQuerie, BaseGetByIdResponse<DailyBalance>>, AddDailyBalanceQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<GetAllDailyBalancesQuerie, List<DailyBalance>>, GetAllDailyBalancesQuerieHandler>();
-builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>, DeleteDailyBalanceQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<DailyBalance>, BaseDeleteResponse>, DeleteDailyBalanceQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<UpdateDailyBalanceQuerie, BaseGetByIdResponse<DailyBalance>>, UpdateDailyBalanceQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<DailyBalance>, BaseGetByIdResponse<DailyBalance>>, GetDailyBalanceByIdQuerieHandler>();
 

@@ -9,7 +9,7 @@ using System.Text;
 
 namespace GSM.Application.Handlers.ProductHandlers
 {
-    public class DeleteProductQuerieHandler : IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>
+    public class DeleteProductQuerieHandler : IRequestHandler<BaseDeleteQuerie<Product>, BaseDeleteResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         public DeleteProductQuerieHandler(IUnitOfWork unitOfWork)
@@ -17,7 +17,7 @@ namespace GSM.Application.Handlers.ProductHandlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseDeleteResponse> Handle(BaseDeleteQuerie request, CancellationToken cancellationToken)
+        public async Task<BaseDeleteResponse> Handle(BaseDeleteQuerie<Product> request, CancellationToken cancellationToken)
         {
             var product = await _unitOfWork.ProductRepository.GetById(request.Id);
             if (product != null)

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace GSM.Application.Queries
 {
-    public class BaseDeleteQuerie : IRequest<BaseDeleteResponse>
+    public class BaseDeleteQuerie<T> : IRequest<BaseDeleteResponse>
     {
         public int Id { get; set; }
     }

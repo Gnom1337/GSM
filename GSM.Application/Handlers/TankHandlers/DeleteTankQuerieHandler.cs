@@ -6,7 +6,7 @@ using MediatR;
 
 namespace GSM.Application.Handlers.TankHandlers
 {
-    public class DeleteTankQuerieHandler : IRequestHandler<BaseDeleteQuerie, BaseDeleteResponse>
+    public class DeleteTankQuerieHandler : IRequestHandler<BaseDeleteQuerie<Tank>, BaseDeleteResponse>
     {
         private readonly IUnitOfWork _unitOfWork;
         public DeleteTankQuerieHandler(IUnitOfWork unitOfWork)
@@ -14,7 +14,7 @@ namespace GSM.Application.Handlers.TankHandlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseDeleteResponse> Handle(BaseDeleteQuerie request, CancellationToken cancellationToken)
+        public async Task<BaseDeleteResponse> Handle(BaseDeleteQuerie<Tank> request, CancellationToken cancellationToken)
         {
             var entity = await _unitOfWork.TankRepository.GetById(request.Id);
             var result =  _unitOfWork.TankRepository.Delete(entity);

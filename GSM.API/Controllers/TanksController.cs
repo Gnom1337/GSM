@@ -30,7 +30,7 @@ namespace GSM.API.Controllers
         [HttpDelete("Delete/{Id}")]
         public async Task<IActionResult> DeleteTankAsync(int Id, CancellationToken token)
         {
-            BaseGetByIdQuerie<Tank> request = new BaseGetByIdQuerie<Tank> { Id = Id };
+            BaseDeleteQuerie<Tank> request = new BaseDeleteQuerie<Tank> { Id = Id };
             return Ok(await _mediator.Send(request, token));
         }
         [HttpPut("Update")]
