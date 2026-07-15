@@ -6,14 +6,14 @@ using MediatR;
 
 namespace GSM.Application.Handlers.TankHandlers
 {
-    public class AddTankQuerieHandler : IRequestHandler<AddTankQuerie, BaseGetByIdResponse<Tank>> 
+    public class AddTankQuerieHandler : IRequestHandler<AddTankQuerie, BaseResponse<Tank>> 
     {
         private readonly IUnitOfWork _unitOfWork;
         public AddTankQuerieHandler(IUnitOfWork UnitOfWork)
         {
             _unitOfWork = UnitOfWork;
         }
-        public async Task<BaseGetByIdResponse<Tank>> Handle(AddTankQuerie request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<Tank>> Handle(AddTankQuerie request, CancellationToken cancellationToken)
         {
             var product = await _unitOfWork.ProductRepository.GetById(request.ProductId);
             if (product != null)
@@ -26,7 +26,7 @@ namespace GSM.Application.Handlers.TankHandlers
                     TankNumber = request.TankNumber,
                 });
                 await _unitOfWork.SaveChangesAsync();
-                return new BaseGetByIdResponse<Tank>
+                return new BaseResponse<Tank>
                 {
                     Message = result.Message,
                     Status = result.Status,
@@ -34,7 +34,7 @@ namespace GSM.Application.Handlers.TankHandlers
             }
             else
             {
-                return new BaseGetByIdResponse<Tank> { Status = "Error", Message = "Произошла ошибка" };
+                return new BaseResponse<Tank> { Status = "Error", Message = "Произошла ошибка" };
             }
         }
     }

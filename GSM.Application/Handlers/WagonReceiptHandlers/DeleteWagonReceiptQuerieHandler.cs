@@ -8,9 +8,9 @@ using System.Text;
 
 namespace GSM.Application.Handlers.WagonReceiptHandlers
 {
-    public class DeleteWagonReceiptQuerieHandler : IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>
+    public class DeleteWagonReceiptQuerieHandler : IRequestHandler<BaseDeleteQuerie<WagonReceipt>, BaseDeleteResponse>
     {
-        public Task<BaseGetByIdResponse<WagonReceipt>> Handle(BaseGetByIdQuerie<WagonReceipt> request, CancellationToken cancellationToken)
+        public Task<BaseDeleteResponse> Handle(BaseDeleteQuerie<WagonReceipt> request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

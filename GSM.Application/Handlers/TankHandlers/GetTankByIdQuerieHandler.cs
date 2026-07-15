@@ -20,9 +20,9 @@ namespace GSM.Application.Handlers.TankHandlers
             var entity = await _unitOfWork.TankRepository.GetById(request.Id);
             if (entity != null) 
             {
-                return new BaseGetByIdResponse<Tank> { Message = "", Status = "", entity = entity};
+                return new BaseGetByIdResponse<Tank> { entity = entity};
             }
-            return new BaseGetByIdResponse<Tank> { Status = "Error", Message = "Произошла ошибка" };
+            return new BaseGetByIdResponse<Tank> { Message = "Произошла ошибка" };
         }
     }
 }

@@ -20,7 +20,7 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
         public async Task<BaseGetByIdResponse<DailyBalance>> Handle(BaseGetByIdQuerie<DailyBalance> request, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.DailyBalanceRepository.GetById(request.Id);
-            return new BaseGetByIdResponse<DailyBalance> { Status = "", Message = "", entity = result };
+            return new BaseGetByIdResponse<DailyBalance> { entity = result };
         }
     }
 }

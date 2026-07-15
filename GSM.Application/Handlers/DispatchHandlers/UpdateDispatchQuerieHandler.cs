@@ -8,9 +8,9 @@ using System.Text;
 
 namespace GSM.Application.Handlers.DispatchHandlers
 {
-    public class UpdateDispatchQuerieHandler : IRequestHandler<UpdateDispatchQuerie, BaseGetByIdResponse<Dispatch>>
+    public class UpdateDispatchQuerieHandler : IRequestHandler<UpdateDispatchQuerie, BaseResponse<Dispatch>>
     {
-        public Task<BaseGetByIdResponse<Dispatch>> Handle(UpdateDispatchQuerie request, CancellationToken cancellationToken)
+        public Task<BaseResponse<Dispatch>> Handle(UpdateDispatchQuerie request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

@@ -8,7 +8,7 @@ using System.Text;
 
 namespace GSM.Application.Queries.DailyBalanceQueries
 {
-    public class AddDailyBalanceQuerie : IRequest<BaseGetByIdResponse<DailyBalance>>
+    public class AddDailyBalanceQuerie : IRequest<BaseResponse<DailyBalance>>
     {
         public DateOnly BalanceDate { get; set; }
         public int TankId { get; set; }

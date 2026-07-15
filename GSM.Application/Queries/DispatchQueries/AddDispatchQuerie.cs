@@ -7,7 +7,7 @@ using System.Text;
 
 namespace GSM.Application.Queries.DispatchQueries
 {
-    public class AddDispatchQuerie : IRequest<BaseGetByIdResponse<Dispatch>>
+    public class AddDispatchQuerie : IRequest<BaseResponse<Dispatch>>
     {
     }
 }

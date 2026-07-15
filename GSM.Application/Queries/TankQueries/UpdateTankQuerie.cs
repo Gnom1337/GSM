@@ -4,7 +4,7 @@ using MediatR;
 
 namespace GSM.Application.Queries.TankQueries
 {
-    public class UpdateTankQuerie : IRequest<BaseGetByIdResponse<Tank>>
+    public class UpdateTankQuerie : IRequest<BaseResponse<Tank>>
     {
         public int TankId {  get; set; }
         public string TankNumber { get; set; }

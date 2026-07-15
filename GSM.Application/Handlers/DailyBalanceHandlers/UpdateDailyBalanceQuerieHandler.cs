@@ -9,7 +9,7 @@ using System.Text;
 
 namespace GSM.Application.Handlers.DailyBalanceHandlers
 {
-    public class UpdateDailyBalanceQuerieHandler : IRequestHandler<UpdateDailyBalanceQuerie, BaseGetByIdResponse<DailyBalance>>
+    public class UpdateDailyBalanceQuerieHandler : IRequestHandler<UpdateDailyBalanceQuerie, BaseResponse<DailyBalance>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public UpdateDailyBalanceQuerieHandler(IUnitOfWork unitOfWork)
@@ -17,7 +17,7 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseGetByIdResponse<DailyBalance>> Handle(UpdateDailyBalanceQuerie request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<DailyBalance>> Handle(UpdateDailyBalanceQuerie request, CancellationToken cancellationToken)
         {
             var dailyBalance = await _unitOfWork.DailyBalanceRepository.GetById(request.DailyBalanceId);
             if (dailyBalance != null)
@@ -36,7 +36,7 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
                     dailyBalance.OpeningVolume = request.OpeningVolume;
                     var result = await _unitOfWork.DailyBalanceRepository.UpdateAsync(dailyBalance);
                     await _unitOfWork.SaveChangesAsync();
-                    return new BaseGetByIdResponse<DailyBalance> { Status = result.Status, Message = result.Message };
+                    return new BaseResponse<DailyBalance> { Status = result.Status, Message = result.Message };
                 }
                 else
                 {
@@ -49,12 +49,12 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
                     dailyBalance.OpeningVolume = request.OpeningVolume;
                     var result = await _unitOfWork.DailyBalanceRepository.UpdateAsync(dailyBalance);
                     await _unitOfWork.SaveChangesAsync();
-                    return new BaseGetByIdResponse<DailyBalance> { Status = result.Status, Message = result.Message };
+                    return new BaseResponse<DailyBalance> { Status = result.Status, Message = result.Message };
                 }
             }
             else
             {
-                return new BaseGetByIdResponse<DailyBalance>
+                return new BaseResponse<DailyBalance>
                 {
                     Status = "Error",
                     Message = "Произошла ошибка"

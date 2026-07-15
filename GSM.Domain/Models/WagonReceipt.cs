@@ -9,6 +9,7 @@ namespace GSM.Domain.Models
 {
     public class WagonReceipt
     {
+        public WagonReceipt() => DiscrepancyLiters = VolumeInvoiceLiters - VolumeActualLiters;
         [Key]
         public int WagonReceiptId {  get; set; }
         public string WagonNumber { get; set; }

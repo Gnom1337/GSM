@@ -9,7 +9,7 @@ using System.Text;
 
 namespace GSM.Application.Handlers.ProductHandlers
 {
-    public class AddProductQuerieHandler : IRequestHandler<AddProductQuerie, BaseGetByIdResponse<Product>>
+    public class AddProductQuerieHandler : IRequestHandler<AddProductQuerie, BaseResponse<Product>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public AddProductQuerieHandler(IUnitOfWork unitOfWork)
@@ -17,7 +17,7 @@ namespace GSM.Application.Handlers.ProductHandlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseGetByIdResponse<Product>> Handle(AddProductQuerie request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<Product>> Handle(AddProductQuerie request, CancellationToken cancellationToken)
         {
             var result = await _unitOfWork.ProductRepository.AddAsync(new Product
             {
@@ -25,7 +25,7 @@ namespace GSM.Application.Handlers.ProductHandlers
                  Name = request.Name,
             });
             await _unitOfWork.SaveChangesAsync();
-            return new BaseGetByIdResponse<Product> { Status = result.Status, Message = result.Message };
+            return new BaseResponse<Product> { Status = result.Status, Message = result.Message };
         }
     }
 }

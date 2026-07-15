@@ -26,9 +26,10 @@ namespace GSM.API.Controllers
         {
             return Ok(await _mediator.Send(new GetAllProductsQuerie()));
         }
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> DeleteProductAsync(BaseGetByIdQuerie<Product> request, CancellationToken token)
+        [HttpDelete("Delete/{Id}")]
+        public async Task<IActionResult> DeleteProductAsync(int Id, CancellationToken token)
         {
+            BaseDeleteQuerie<Product> request = new BaseDeleteQuerie<Product> { Id = Id };
             return Ok(await _mediator.Send(request, token));
         }
         [HttpPut("Update")]

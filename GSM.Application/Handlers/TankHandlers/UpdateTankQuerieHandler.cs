@@ -9,7 +9,7 @@ using System.Text;
 
 namespace GSM.Application.Handlers.TankHandlers
 {
-    public class UpdateTankQuerieHandler : IRequestHandler<UpdateTankQuerie, BaseGetByIdResponse<Tank>>
+    public class UpdateTankQuerieHandler : IRequestHandler<UpdateTankQuerie, BaseResponse<Tank>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public UpdateTankQuerieHandler(IUnitOfWork unitOfWork)
@@ -17,7 +17,7 @@ namespace GSM.Application.Handlers.TankHandlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseGetByIdResponse<Tank>> Handle(UpdateTankQuerie request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<Tank>> Handle(UpdateTankQuerie request, CancellationToken cancellationToken)
         {
             var entity = await _unitOfWork.TankRepository.GetById(request.TankId);
             if (entity != null)
@@ -31,16 +31,16 @@ namespace GSM.Application.Handlers.TankHandlers
                     entity.Product = product;
                     var result = _unitOfWork.TankRepository.UpdateAsync(entity);
                     await _unitOfWork.SaveChangesAsync();
-                    return new BaseGetByIdResponse<Tank> { Message = result.Result.Message, Status = result.Result.Status };  
+                    return new BaseResponse<Tank> { Message = result.Result.Message, Status = result.Result.Status };  
                 }
                 else
                 {
-                    return new BaseGetByIdResponse<Tank> { Status = "Error", Message = "Произошла ошибка" };
+                    return new BaseResponse<Tank> { Status = "Error", Message = "Произошла ошибка" };
                 }
             }
             else
             {
-                return new BaseGetByIdResponse<Tank> { Status = "Error", Message = "Произошла ошибка" };
+                return new BaseResponse<Tank> { Status = "Error", Message = "Произошла ошибка" };
             }
 
         }

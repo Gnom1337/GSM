@@ -8,9 +8,9 @@ using System.Text;
 
 namespace GSM.Application.Handlers.TankMeasurmentHandlers
 {
-    public class AddTankMeasurmentQuerieHandler : IRequestHandler<AddTankMeasurmentQuerie, BaseGetByIdResponse<TankMeasurement>>
+    public class AddTankMeasurmentQuerieHandler : IRequestHandler<AddTankMeasurmentQuerie, BaseResponse<TankMeasurement>>
     {
-        public Task<BaseGetByIdResponse<TankMeasurement>> Handle(AddTankMeasurmentQuerie request, CancellationToken cancellationToken)
+        public Task<BaseResponse<TankMeasurement>> Handle(AddTankMeasurmentQuerie request, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }

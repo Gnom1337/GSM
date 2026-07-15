@@ -7,7 +7,7 @@ using System.Text;
 
 namespace GSM.Application.Queries.WagonReceiptQueries
 {
-    public class UpdateWagonReceiptQuerie : IRequest<BaseGetByIdResponse<WagonReceipt>>
+    public class UpdateWagonReceiptQuerie : IRequest<BaseResponse<WagonReceipt>>
     {
     }
 }

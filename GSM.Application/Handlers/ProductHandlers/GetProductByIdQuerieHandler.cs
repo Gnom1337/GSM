@@ -22,9 +22,9 @@ namespace GSM.Application.Handlers.ProductHandlers
             var result = await _unitOfWork.ProductRepository.GetById(request.Id);
             if (result != null) 
             { 
-                return new BaseGetByIdResponse<Product> { Status = "Success", Message = "Запись получена", entity = result };
+                return new BaseGetByIdResponse<Product> { entity = result };
             }
-            return new BaseGetByIdResponse<Product> { Status = "Error", Message = "Произошла ошибка" };
+            return new BaseGetByIdResponse<Product> { Message = "Произошла ошибка" };
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 
 namespace GSM.Application.Queries.TankMeasurmentQueries
 {
-    public class AddTankMeasurmentQuerie : IRequest<BaseGetByIdResponse<TankMeasurement>>
+    public class AddTankMeasurmentQuerie : IRequest<BaseResponse<TankMeasurement>>
     {
     }
 }

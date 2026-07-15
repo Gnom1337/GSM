@@ -10,7 +10,7 @@ using System.Text;
 
 namespace GSM.Application.Handlers.DailyBalanceHandlers
 {
-    public class AddDailyBalanceQuerieHandler : IRequestHandler<AddDailyBalanceQuerie, BaseGetByIdResponse<DailyBalance>>
+    public class AddDailyBalanceQuerieHandler : IRequestHandler<AddDailyBalanceQuerie, BaseResponse<DailyBalance>>
     {
         private readonly IUnitOfWork _unitOfWork;
         public AddDailyBalanceQuerieHandler(IUnitOfWork unitOfWork)
@@ -18,7 +18,7 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<BaseGetByIdResponse<DailyBalance>> Handle(AddDailyBalanceQuerie request, CancellationToken cancellationToken)
+        public async Task<BaseResponse<DailyBalance>> Handle(AddDailyBalanceQuerie request, CancellationToken cancellationToken)
         {
             var tank = await _unitOfWork.TankRepository.GetById(request.TankId);
             if (tank != null)
@@ -36,11 +36,11 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
 
                 });
                 await _unitOfWork.SaveChangesAsync();
-                return new BaseGetByIdResponse<DailyBalance> { Status = result.Status, Message = result.Message };
+                return new BaseResponse<DailyBalance> { Status = result.Status, Message = result.Message };
             }
             else
             {
-                return new BaseGetByIdResponse<DailyBalance> { Status = "Error", Message = "Произошла ошибка" };
+                return new BaseResponse<DailyBalance> { Status = "Error", Message = "Произошла ошибка" };
             }
         }
     }

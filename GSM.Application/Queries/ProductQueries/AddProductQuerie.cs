@@ -7,7 +7,7 @@ using System.Text;
 
 namespace GSM.Application.Queries.ProductQueries
 {
-    public class AddProductQuerie : IRequest<BaseGetByIdResponse<Product>>
+    public class AddProductQuerie : IRequest<BaseResponse<Product>>
     {
         public string Name { get; set; }
         public double Density { get; set; }
