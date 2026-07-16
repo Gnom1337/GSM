@@ -21,10 +21,17 @@ import MenuItem from '@mui/material/MenuItem';
 import Chip from '@mui/material/Chip';
 import Door from '@mui/icons-material/LogoutOutlined';
 import Stats from '@mui/icons-material/BarChart';
-import Datagrid from '../components/dataGrid'
+import Incoming from '@mui/icons-material/CallReceived';
+import Tank from '@mui/icons-material/OilBarrel';
+import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
+import Report from '@mui/icons-material/Assignment';
+import { Outlet, useNavigate } from "react-router-dom";
+
 const drawerWidth = 240;
 
+
 function ResponsiveDrawer(props) {
+    const navigate = useNavigate();
     const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isClosing, setIsClosing] = React.useState(false);
@@ -55,6 +62,7 @@ function ResponsiveDrawer(props) {
     const handleClose = () => {
         setAnchorEl(null);
     };
+    
     const drawer = (
         <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
             <Toolbar
@@ -70,21 +78,62 @@ function ResponsiveDrawer(props) {
                 <Chip icon={<AccountCircle />} label="Грибов Данил" color="primary" />
             </Toolbar>
             <Divider />
-            <List>
-                    <ListItem key={'Статистика'} disablePadding>
-                        <ListItemButton>
+
+                <List>
+
+                        
+                        <ListItem key={'Статистика'} disablePadding>
+                            
+                    <ListItemButton onClick={() => navigate("/stats")}>
+
                             <ListItemIcon>
                             <Stats color="primary"/>
                             </ListItemIcon>
                         <ListItemText primary={'Статистика'} />
-                        </ListItemButton>
-                    </ListItem>
+                                </ListItemButton>
+                        
+                        </ListItem>
+
+                <ListItem key={'Приход вагонов'} disablePadding>
+                    <ListItemButton onClick={() => navigate("/incoming")}>
+                        <ListItemIcon>
+                            <Incoming color="primary" />
+                        </ListItemIcon>
+                        <ListItemText primary={'Приход вагонов'} />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem key={'Резервуары'} disablePadding>
+                    <ListItemButton onClick={() => navigate("/tanks")}>
+                        <ListItemIcon>
+                            <Tank color="primary" />
+                        </ListItemIcon>
+                        <ListItemText primary={'Резервуары'} />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem key={'Отпуск в автоцистерны'} disablePadding>
+                    <ListItemButton onClick={() => navigate("/shipment")}>
+                        <ListItemIcon>
+                            <ScheduleSendIcon color="primary" />
+                        </ListItemIcon>
+                        <ListItemText primary={'Отпуск в автоцистерны'} />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem key={'Отчеты'} disablePadding>
+                    <ListItemButton onClick={() => navigate("/reports")}>
+                        <ListItemIcon>
+                            <Report color="primary" />
+                        </ListItemIcon>
+                        <ListItemText primary={'Отчеты'} />
+                    </ListItemButton>
+                            </ListItem>
+                        
+                
             </List>
             <Divider />
             <List>
                 {['Админ панель'].map((text) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton>
+                        <ListItemButton onClick={() => navigate("/admin")}>
                             <ListItemIcon>
                                 <AdminIcon color="primary"/> 
                             </ListItemIcon>
@@ -92,13 +141,13 @@ function ResponsiveDrawer(props) {
                         </ListItemButton>
                     </ListItem>
                 ))}
-            </List>
+                </List>
         </Box>
     );
 
     // Remove this const when copying and pasting into your project.
     const container = window !== undefined ? () => window().document.body : undefined;
-
+    
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -217,7 +266,7 @@ function ResponsiveDrawer(props) {
                 sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
             >
                 <Toolbar />
-                <Datagrid/>
+                <Outlet/>
                
             </Box>
         </Box>
