@@ -1,16 +1,11 @@
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Menu from './components/menu.jsx'
+import { deepPurple } from '@mui/material/colors'
 import './App.css'
 const theme = createTheme({
     palette: {
-        primary: {
-            main: "#3f51b5"
-        },
-        secondary: {
-            main: "#7986cb"
-        },
-        light: '#ba68c8',
-        dark: '#7b1fa2',
+        primary: deepPurple,
+        secondary: deepPurple,
     },
 });
 function App() {
