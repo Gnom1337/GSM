@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import JournalIcon from "@mui/icons-material/MenuBook";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import Typography from "@mui/material/Typography";
 import {
@@ -22,30 +23,38 @@ export default function AppDataGrid({
     showAddButton = true,
     onAdd,
 
+    onJournal,
     onView,
     onEdit,
     onDelete,
 }) {
 
     // Все колонки автоматически растягиваем
-    const gridColumns = columns.map(column => ({
-        minWidth: 120,
-        flex: 1,
+    const gridColumns = columns.map((column) => ({
+        flex: column.flex ?? 1,
+        minWidth: column.minWidth ?? 150,
         ...column,
     }));
 
     // Добавляем колонку действий
-    if (onView || onEdit || onDelete) {
+    if (onJournal || onView || onEdit || onDelete ) {
         gridColumns.push({
             field: "actions",
             type: "actions",
             headerName: "Действия",
-            width: 140,
+            minWidth: 140,
             flex: 0.6,
 
             getActions: ({ row }) => {
                 const actions = [];
-
+                if (onJournal)
+                    actions.push(
+                        <GridActionsCellItem
+                            icon={<JournalIcon color="secondary" />}
+                            label="Журнал замеров"
+                            onClick={() => onJournal(row)}
+                        />
+                    );
                 if (onView)
                     actions.push(
                         <GridActionsCellItem
@@ -72,21 +81,34 @@ export default function AppDataGrid({
                             onClick={() => onDelete(row)}
                         />
                     );
-
+                
                 return actions;
             },
         });
     }
 
     return (
-        <Box sx={{ width: "100%" }}>
+        <Box
+            sx={{
+                width: "100%",
+                overflowX: "auto",
+            }}
+        >
 
             {showAddButton && (
                 <Box
                     sx={{
                         display: "flex",
+                        flexDirection: {
+                            xs: "column",
+                            sm: "row",
+                        },
+                        gap: 2,
                         justifyContent: "space-between",
-                        alignItems: "center",
+                        alignItems: {
+                            xs: "stretch",
+                            sm: "center",
+                        },
                         mb: 2,
                     }}
                 >
@@ -95,9 +117,9 @@ export default function AppDataGrid({
                     </Typography>
                     <Button color="secondary"
                         variant="contained"
-                        startIcon={<AddIcon color="transparrent" />}
+                        startIcon={<AddIcon />}
                         onClick={onAdd}
-                        sx={{ color:"transparrent"} }
+                        
                     >
                         Добавить
                     </Button>
@@ -105,6 +127,10 @@ export default function AppDataGrid({
             )}
 
             <DataGrid
+                sx={{
+                    height: "82vh",
+                    minWidth: 300, // или вычислять динамически
+                }}
                 rows={rows}
                 columns={gridColumns}
                 loading={loading}

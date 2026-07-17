@@ -263,7 +263,14 @@ function ResponsiveDrawer(props) {
             </Box>
             <Box
                 component="main"
-                sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+                sx={{
+                    flexGrow: 1,
+                    p: 3,
+                    minWidth: 0, // важно
+                    width: { sm: `calc(100% - ${drawerWidth}px)` },
+                    overflowX: "auto",
+
+                }}
             >
                 <Toolbar />
                 <Outlet/>

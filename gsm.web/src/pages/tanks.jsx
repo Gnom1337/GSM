@@ -47,6 +47,7 @@ export default function TanksPage() {
             loading={loading}
             getRowId={(row) => row.tankId}
             onAdd={() => console.log("Добавить")}
+            onJournal={(row) => console.log("Журнал замеров", row)}
             onEdit={(row) => console.log("Редактировать", row)}
             onDelete={(row) => console.log("Удалить", row)}
             onView={(row) => console.log("Просмотр", row)}
