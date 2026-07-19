@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import AppDataGrid from "../components/DataGrid";
-
+import Tank from '@mui/icons-material/OilBarrel';
 export default function TanksPage() {
 
     const [rows, setRows] = useState([]);
@@ -41,6 +41,7 @@ export default function TanksPage() {
 
     return (
         <AppDataGrid
+            icon={Tank}
             title="Резервуары"
             rows={rows}
             columns={columns}

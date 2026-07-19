@@ -7,6 +7,7 @@ import ReportsPage from "./pages/Reports";
 import IncomingPage from "./pages/Incoming";
 import ShipmentPage from "./pages/Shipment";
 import AdminPage from "./pages/Admin";
+import LoginPage from "./pages/login";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 const theme = createTheme({
     palette: {
@@ -18,18 +19,25 @@ const theme = createTheme({
 function App() {
     return (
         <ThemeProvider theme={theme}>
-        <BrowserRouter>
-            <Routes>
-                <Route path="/" element={<ResponsiveDrawer />}>
-                    <Route index element={<StatsPage />} />
+
+            <BrowserRouter>
+                <Routes>
+
+                    {/* Авторизация без Layout */}
+                    <Route path="/login" element={<LoginPage />} />
+
+                    {/* Все остальные страницы с Layout */}
+                    <Route path="/" element={<ResponsiveDrawer />}>
+                        <Route index element={<StatsPage />} />
                         <Route path="stats" element={<StatsPage />} />
                         <Route path="incoming" element={<IncomingPage />} />
                         <Route path="tanks" element={<TanksPage />} />
                         <Route path="reports" element={<ReportsPage />} />
                         <Route path="shipment" element={<ShipmentPage />} />
                         <Route path="admin" element={<AdminPage />} />
-                </Route>
-            </Routes>
+                    </Route>
+
+                </Routes>
             </BrowserRouter>
         </ThemeProvider>
     );
