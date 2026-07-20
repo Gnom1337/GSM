@@ -41,7 +41,8 @@ namespace GSM.API.Controllers
         public async Task<IActionResult> GetProductByIdAsync(int Id, CancellationToken token)
         {
             BaseGetByIdQuerie<Product> request = new BaseGetByIdQuerie<Product> { Id = Id };
-            return Ok(await _mediator.Send(request, token));
+            var result = await _mediator.Send(request, token);
+            return Ok(result.entity);
         }
     }
 }
