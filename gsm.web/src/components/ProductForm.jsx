@@ -29,8 +29,6 @@ export default function ProductForm({
 
     useEffect(() => {
 
-        console.log("ProductForm value:", value);
-
 
         if (value) {
 

@@ -69,7 +69,7 @@ export default function AppDataGrid({
     rows,
     columns,
     sx,
-    loading = false,
+    loading = true,
     getRowId = (row) => row.id,
     icon: Icon,
     showAddButton = true,
@@ -207,6 +207,12 @@ export default function AppDataGrid({
                     },
                 }}
                 slots={{ noRowsOverlay: CustomNoRowsOverlay }}
+                slotProps={{
+                    loadingOverlay: {
+                        variant: 'linear-progress',
+                        noRowsVariant: 'linear-progress',
+                    },
+                }}
             />
         </Box>
     );

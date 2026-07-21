@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace GSM.Infrastructure.Repository
 {
-    public class RepositoryBase<T> : IRepositoryBase<T> where T : class, new()
+    public class RepositoryBase<T> : IRepositoryBase<T> where T : class
     {
         private readonly ApplicationDbContext _dbContext;
         public RepositoryBase(ApplicationDbContext dbContext)

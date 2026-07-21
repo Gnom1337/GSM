@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
     Container,
     Grid,
@@ -13,12 +14,28 @@ import AdminIcon from '@mui/icons-material/AdminPanelSettings';
 import ProductForm from "../components/ProductForm";
 import EntityDialog from "../components/EntityDialog";
 import UserForm from "../components/UserForm";
-
-
+import Snackbar from '@mui/material/Snackbar';
+import Slide from '@mui/material/Slide';
+import Alert from '@mui/material/Alert';
+function SlideTransition(props) {
+    return <Slide {...props} direction="up" />;
+}
 export default function AdminPage() {
+    
+    
+    const [state, setState] = React.useState({
+        open: false,
+        vertical: 'bottom',
+        horizontal: 'center',
+        Transition: SlideTransition
+    });
+    const { vertical, horizontal, open } = state;
+   
+    const [usersLoading, setUsersLoading] = useState(true);
+    const [productsLoading, setProductsLoading] = useState(true);
 
     const [rows, setRows] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [products, setProducts] = useState([]);
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
@@ -27,37 +44,41 @@ export default function AdminPage() {
     const [selectedUser, setSelectedUser] = useState(null);
 
     const [editedUser, setEditedUser] = useState({});
-    const [products, setProducts] = useState([]);
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [editedProduct, setEditedProduct] = useState({});
     const [productDialogOpen, setProductDialogOpen] = useState(false);
     const [productMode, setProductMode] = useState("add");
-    const loadProducts = () => {
-
-        axios.get("https://localhost:5141/api/Products/GetAll")
+    const loadProducts = async () => {
+        setProductsLoading(true);
+       await axios.get("https://localhost:5141/api/Products/GetAll")
             .then(res => {
                 setProducts(res.data);
+            })
+            .finally(() => {
+                setProductsLoading(false);
             });
 
     };
-    const loadUsers = () => {
+    const loadUsers = async () => {
 
-        setLoading(true);
+        setUsersLoading(true);
 
-        axios.get("https://localhost:5141/api/Users/GetAll")
+        await axios.get("https://localhost:5141/api/Users/GetAll")
             .then(res => {
                 setRows(res.data);
             })
             .finally(() => {
-                setLoading(false);
+               setUsersLoading(false);
             });
     };
 
 
     useEffect(() => {
 
-        loadUsers();
-        loadProducts();
+        Promise.all([
+           loadUsers(),
+           loadProducts()
+        ]);
 
     }, []);
     const handleAddProduct = () => {
@@ -123,6 +144,7 @@ export default function AdminPage() {
         setProductDialogOpen(true);
 
     };
+    
     const saveProduct = async () => {
 
 
@@ -153,8 +175,10 @@ export default function AdminPage() {
 
             }
 
-
-
+            
+            setState({
+                ...state, vertical: 'bottom',
+                horizontal: 'center', open: true });
             setProductDialogOpen(false);
 
 
@@ -193,7 +217,10 @@ export default function AdminPage() {
                 `https://localhost:5141/api/Products/Delete/${row.productId}`
 
             );
-
+            setState({
+                ...state, vertical: 'bottom',
+                horizontal: 'center', open: true
+            });
 
             loadProducts();
 
@@ -276,7 +303,10 @@ export default function AdminPage() {
 
             }
 
-
+            setState({
+                ...state, vertical: 'bottom',
+                horizontal: 'center', open: true
+            });
             setDialogOpen(false);
 
             loadUsers();
@@ -315,7 +345,10 @@ export default function AdminPage() {
                 `https://localhost:5141/api/Users/Delete/${row.UserId}`
             );
 
-
+            setState({
+                ...state, vertical: 'bottom',
+                horizontal: 'center', open: true
+            });
             loadUsers();
 
         }
@@ -330,7 +363,9 @@ export default function AdminPage() {
 
     };
 
-
+    const handleClose = () => {
+        setState({ ...state, open: false });
+    };
 
 
     const columnsUsers = [
@@ -419,8 +454,8 @@ export default function AdminPage() {
 
                             columns={columnsUsers}
 
-                            loading={loading}
-
+                            loading={usersLoading}
+                            
                             getRowId={
                                 row => row.UserId
                             }
@@ -468,8 +503,8 @@ export default function AdminPage() {
                             columns={columnsProducts}
 
 
-                            loading={loading}
-
+                            loading={productsLoading}
+                            
 
                             getRowId={
                                 row => row.productId
@@ -584,7 +619,22 @@ export default function AdminPage() {
                 />
 
             </EntityDialog>
-
+            <Snackbar
+                anchorOrigin={{ vertical, horizontal }}
+                open={open}
+                key={SlideTransition}
+                slots={{ transition: state.Transition }}
+                autoHideDuration={2000} onClose={handleClose}
+            >
+                <Alert
+                    onClose={handleClose}
+                    severity="success"
+                    variant="outlined"
+                    sx={{ width: '100%' }}
+                >
+                    Операция прошла успешно!
+                </Alert>
+            </Snackbar>
         </Container>
 
     );
