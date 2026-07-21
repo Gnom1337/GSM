@@ -29,11 +29,11 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
 
                     dailyBalance.TotalDispatched = request.TotalDispatched;
                     dailyBalance.BalanceDate = request.BalanceDate;
-                    dailyBalance.ClosingVolumeCalculated = request.ClosingVolumeCalculated;
                     dailyBalance.ClosingVolumeActual = request.ClosingVolumeActual;
-                    dailyBalance.LossLiters = request.LossLiters;
                     dailyBalance.TotalReceived = request.TotalReceived;
                     dailyBalance.OpeningVolume = request.OpeningVolume;
+                    dailyBalance.ClosingVolumeCalculated = request.OpeningVolume + request.TotalReceived - request.TotalDispatched;
+                    dailyBalance.LossLiters = dailyBalance.ClosingVolumeCalculated - request.ClosingVolumeActual;
                     var result = await _unitOfWork.DailyBalanceRepository.UpdateAsync(dailyBalance);
                     await _unitOfWork.SaveChangesAsync();
                     return new BaseResponse<DailyBalance> { Status = result.Status, Message = result.Message };
@@ -42,9 +42,7 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
                 {
                     dailyBalance.TotalDispatched = request.TotalDispatched;
                     dailyBalance.BalanceDate = request.BalanceDate;
-                    dailyBalance.ClosingVolumeCalculated = request.ClosingVolumeCalculated;
                     dailyBalance.ClosingVolumeActual = request.ClosingVolumeActual;
-                    dailyBalance.LossLiters = request.LossLiters;
                     dailyBalance.TotalReceived = request.TotalReceived;
                     dailyBalance.OpeningVolume = request.OpeningVolume;
                     var result = await _unitOfWork.DailyBalanceRepository.UpdateAsync(dailyBalance);

@@ -16,8 +16,6 @@ namespace GSM.Application.Queries.DailyBalanceQueries
         public decimal OpeningVolume { get; set; }
         public decimal TotalReceived { get; set; }
         public decimal TotalDispatched { get; set; }
-        public decimal ClosingVolumeCalculated { get; set; }
-        public decimal ClosingVolumeActual { get; set; }
-        public decimal LossLiters { get; set; }
+        public decimal ClosingVolumeActual { get; set; } 
     }
 }

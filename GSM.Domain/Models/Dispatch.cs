@@ -23,6 +23,6 @@ namespace GSM.Domain.Models
         [ForeignKey(nameof(UserId))]
         public int UserId { get; set;  }
         public User User { get; set; }
-        public TimeOnly CreatedAt { get; set;  }
+        public DateTime CreatedAt { get; set;  }
     }
 }

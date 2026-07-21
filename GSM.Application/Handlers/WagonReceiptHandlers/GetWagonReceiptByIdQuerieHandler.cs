@@ -1,5 +1,6 @@
 ﻿using GSM.Application.Queries;
 using GSM.Application.Responses;
+using GSM.Domain.Interfaces;
 using GSM.Domain.Models;
 using MediatR;
 using System;
@@ -10,9 +11,20 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
 {
     public class GetWagonReceiptByIdQuerieHandler : IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>
     {
-        public Task<BaseGetByIdResponse<WagonReceipt>> Handle(BaseGetByIdQuerie<WagonReceipt> request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork _unitOfWork;
+        public GetWagonReceiptByIdQuerieHandler(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<BaseGetByIdResponse<WagonReceipt>> Handle(BaseGetByIdQuerie<WagonReceipt> request, CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.WagonReceiptRepository.GetById(request.Id);
+            if (result != null)
+            {
+                return new BaseGetByIdResponse<WagonReceipt> { Message = "Данные получены", entity = result };
+            }
+            return new BaseGetByIdResponse<WagonReceipt> { Message = "Произошла ошибка" };
         }
     }
 }

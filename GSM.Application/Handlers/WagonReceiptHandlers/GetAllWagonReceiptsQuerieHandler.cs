@@ -1,4 +1,5 @@
 ﻿using GSM.Application.Queries.WagonReceiptQueries;
+using GSM.Domain.Interfaces;
 using GSM.Domain.Models;
 using MediatR;
 using System;
@@ -9,9 +10,15 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
 {
     public class GetAllWagonReceiptsQuerieHandler : IRequestHandler<GetAllWagonReceiptsQuerie, List<WagonReceipt>>
     {
-        public Task<List<WagonReceipt>> Handle(GetAllWagonReceiptsQuerie request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork _unitOfWork;
+        public GetAllWagonReceiptsQuerieHandler(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<List<WagonReceipt>> Handle(GetAllWagonReceiptsQuerie request, CancellationToken cancellationToken)
+        {
+            return await _unitOfWork.WagonReceiptRepository.GetAllAsync();
         }
     }
 }

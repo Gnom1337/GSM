@@ -1,5 +1,6 @@
 ﻿using GSM.Application.Queries;
 using GSM.Application.Responses;
+using GSM.Domain.Interfaces;
 using GSM.Domain.Models;
 using MediatR;
 using System;
@@ -10,9 +11,16 @@ namespace GSM.Application.Handlers.TankMeasurmentHandlers
 {
     public class GetTankMeasurmentByIdQuerieHandler : IRequestHandler<BaseGetByIdQuerie<TankMeasurement>, BaseGetByIdResponse<TankMeasurement>>
     {
-        public Task<BaseGetByIdResponse<TankMeasurement>> Handle(BaseGetByIdQuerie<TankMeasurement> request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork _unitOfWork;
+        public GetTankMeasurmentByIdQuerieHandler(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<BaseGetByIdResponse<TankMeasurement>> Handle(BaseGetByIdQuerie<TankMeasurement> request, CancellationToken cancellationToken)
+        {
+            var result = await _unitOfWork.TankMeasurementRepository.GetById(request.Id);
+            return new BaseGetByIdResponse<TankMeasurement> { entity = result };
         }
     }
 }

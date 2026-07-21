@@ -1,5 +1,6 @@
 ﻿using GSM.Application.Queries;
 using GSM.Application.Responses;
+using GSM.Domain.Interfaces;
 using GSM.Domain.Models;
 using MediatR;
 using System;
@@ -10,9 +11,22 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
 {
     public class DeleteWagonReceiptQuerieHandler : IRequestHandler<BaseDeleteQuerie<WagonReceipt>, BaseDeleteResponse>
     {
-        public Task<BaseDeleteResponse> Handle(BaseDeleteQuerie<WagonReceipt> request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork _unitOfWork;
+        public DeleteWagonReceiptQuerieHandler(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<BaseDeleteResponse> Handle(BaseDeleteQuerie<WagonReceipt> request, CancellationToken cancellationToken)
+        {
+            var wagonReceipt = await _unitOfWork.WagonReceiptRepository.GetById(request.Id);
+            if (wagonReceipt != null)
+            {
+                var result = _unitOfWork.WagonReceiptRepository.Delete(wagonReceipt);
+                await _unitOfWork.SaveChangesAsync();
+                return new BaseDeleteResponse { Status = "Success", Message = "Запись успешно удалена" };
+            }
+            return new BaseDeleteResponse { Status = "Error", Message = "Произошла ошибка" };
         }
     }
 }

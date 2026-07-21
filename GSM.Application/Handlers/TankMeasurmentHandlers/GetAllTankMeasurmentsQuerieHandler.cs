@@ -1,4 +1,5 @@
 ﻿using GSM.Application.Queries.TankMeasurmentQueries;
+using GSM.Domain.Interfaces;
 using GSM.Domain.Models;
 using MediatR;
 using System;
@@ -9,9 +10,15 @@ namespace GSM.Application.Handlers.TankMeasurmentHandlers
 {
     public class GetAllTankMeasurmentsQuerieHandler : IRequestHandler<GetAllTankMeasurmentsQuerie, List<TankMeasurement>>
     {
-        public Task<List<TankMeasurement>> Handle(GetAllTankMeasurmentsQuerie request, CancellationToken cancellationToken)
+        private readonly IUnitOfWork _unitOfWork;
+        public GetAllTankMeasurmentsQuerieHandler(IUnitOfWork unitOfWork)
         {
-            throw new NotImplementedException();
+            _unitOfWork = unitOfWork;
+        }
+
+        public async Task<List<TankMeasurement>> Handle(GetAllTankMeasurmentsQuerie request, CancellationToken cancellationToken)
+        {
+            return await _unitOfWork.TankMeasurementRepository.GetAllAsync();
         }
     }
 }

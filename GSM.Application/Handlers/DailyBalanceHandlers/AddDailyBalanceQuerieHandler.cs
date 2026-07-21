@@ -27,8 +27,6 @@ namespace GSM.Application.Handlers.DailyBalanceHandlers
                 {
                     BalanceDate = request.BalanceDate,
                     ClosingVolumeActual = request.ClosingVolumeActual,
-                    ClosingVolumeCalculated = request.ClosingVolumeCalculated,
-                    LossLiters = request.LossLiters,
                     OpeningVolume = request.OpeningVolume,
                     TotalDispatched = request.TotalDispatched,
                     TotalReceived = request.TotalReceived,
