@@ -132,6 +132,41 @@ export default function AdminPage() {
         }
 
     };
+    const handleViewUser = async (row) => {
+
+        try {
+
+            const res = await axios.get(
+                `https://localhost:5141/api/Users/GetById/${row.userId}`
+            );
+
+
+            const user = {
+
+                userId: res.data.userId ?? res.data.userId,
+                fullName: res.data.fullName ?? res.data.FullName,
+                login: res.data.login ?? res.data.Login,
+                roleName: res.data.roleName ?? res.data.RoleName
+
+            };
+
+
+            setSelectedProduct(user);
+
+            setEditedProduct(user);
+
+            setProductMode("view");
+
+            setProductDialogOpen(true);
+
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+    };
 
     const handleEditProduct = (row) => {
 
@@ -247,7 +282,7 @@ export default function AdminPage() {
             fullName: "",
             login: "",
             password: "",
-            roleId: null
+            roleName: "Оператор"
         });
 
         setDialogOpen(true);
@@ -255,15 +290,7 @@ export default function AdminPage() {
 
 
 
-    const handleViewUser = (row) => {
-
-        setMode("view");
-
-        setSelectedUser(row);
-
-        setDialogOpen(true);
-    };
-
+    
 
 
     const handleEditUser = (row) => {
@@ -297,7 +324,7 @@ export default function AdminPage() {
             if (mode === "edit") {
 
                 await axios.put(
-                    `https://localhost:5141/api/Users/Update/${editedUser.UserId}`,
+                    `https://localhost:5141/api/Users/Update/${editedUser.userId}`,
                     editedUser
                 );
 
@@ -342,7 +369,7 @@ export default function AdminPage() {
         try {
 
             await axios.delete(
-                `https://localhost:5141/api/Users/Delete/${row.UserId}`
+                `https://localhost:5141/api/Users/Delete/${row.userId}`
             );
 
             setState({
@@ -366,11 +393,11 @@ export default function AdminPage() {
     const handleClose = () => {
         setState({ ...state, open: false });
     };
-
+    
 
     const columnsUsers = [
         {
-            field: "UserId",
+            field: "userId",
             headerName: "ID",
         },
         {
@@ -457,7 +484,7 @@ export default function AdminPage() {
                             loading={usersLoading}
                             
                             getRowId={
-                                row => row.UserId
+                                row => row.userId
                             }
 
 
@@ -575,7 +602,7 @@ export default function AdminPage() {
 
 
                 <UserForm
-                    value={selectedUser}
+                    value={editedUser}
                     mode={mode}
                     onChange={setEditedUser}
                 />

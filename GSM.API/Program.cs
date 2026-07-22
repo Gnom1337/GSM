@@ -1,8 +1,11 @@
+using GSM.API.Extensions;
+using GSM.Application.Abstractions;
 using GSM.Application.Handlers.DailyBalanceHandlers;
 using GSM.Application.Handlers.DispatchHandlers;
 using GSM.Application.Handlers.ProductHandlers;
 using GSM.Application.Handlers.TankHandlers;
 using GSM.Application.Handlers.TankMeasurmentHandlers;
+using GSM.Application.Handlers.UserHandler;
 using GSM.Application.Handlers.WagonReceiptHandlers;
 using GSM.Application.Queries;
 using GSM.Application.Queries.DailyBalanceQueries;
@@ -10,12 +13,17 @@ using GSM.Application.Queries.DispatchQueries;
 using GSM.Application.Queries.ProductQueries;
 using GSM.Application.Queries.TankMeasurmentQueries;
 using GSM.Application.Queries.TankQueries;
+using GSM.Application.Queries.UserQuerie;
 using GSM.Application.Queries.WagonReceiptQueries;
 using GSM.Application.Responses;
+using GSM.Application.Responses.UserResponses;
+using GSM.Application.Services;
 using GSM.Domain.Interfaces;
 using GSM.Domain.Models;
 using GSM.Infrastructure.Data;
 using GSM.Infrastructure.Repository;
+using GSM.Infrastructure.Tools;
+using GSM.Infrastructure.Tools.Options;
 using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
 
@@ -78,7 +86,21 @@ builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<WagonReceipt>, Ba
 builder.Services.AddTransient<IRequestHandler<UpdateWagonReceiptQuerie, BaseResponse<WagonReceipt>>, UpdateWagonReceiptQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>, GetWagonReceiptByIdQuerieHandler>();
 
+
+
+
+
+builder.Services.AddApiAuth(builder.Configuration);
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddTransient<IRequestHandler<AddUserQuerie, BaseResponse<User>>, AddUserQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<GetAllUsersQuerie, List<GetAllUsersResponse>>, GetAllUsersQuerieHandler>();
+//builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<WagonReceipt>, BaseDeleteResponse>, DeleteWagonReceiptQuerieHandler>();
+//builder.Services.AddTransient<IRequestHandler<UpdateWagonReceiptQuerie, BaseResponse<WagonReceipt>>, UpdateWagonReceiptQuerieHandler>();
+//builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>, GetWagonReceiptByIdQuerieHandler>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IJwtProvider, JwtProvider>();
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

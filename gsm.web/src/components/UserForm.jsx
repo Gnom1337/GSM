@@ -18,7 +18,7 @@ export default function UserForm({
         fullName: "",
         login: "",
         password: "",
-        roleId: 2
+        roleName: 2
     });
 
     useEffect(() => {
@@ -29,7 +29,7 @@ export default function UserForm({
                 fullName: value.fullName ?? "",
                 login: value.login ?? "",
                 password: "",
-                roleId: value.roleId ?? 2
+                roleName: value.roleName ?? 2
             });
 
         }
@@ -89,19 +89,19 @@ export default function UserForm({
                 </InputLabel>
 
                 <Select
-                    value={user.roleId}
+                    value={user.roleName}
                     label="Роль"
                     disabled={disabled}
                     onChange={(e) =>
-                        update("roleId", e.target.value)
+                        update("roleName", e.target.value)
                     }
                 >
 
-                    <MenuItem value={1}>
+                    <MenuItem value={"Администратор"}>
                         Администратор
                     </MenuItem>
 
-                    <MenuItem value={2}>
+                    <MenuItem value={"Оператор"}>
                         Оператор
                     </MenuItem>
 

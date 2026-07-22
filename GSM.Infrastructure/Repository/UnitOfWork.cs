@@ -39,7 +39,7 @@ namespace GSM.Infrastructure.Repository
         {
             get { return field ??= new RepositoryBase<Dispatch>(context); }
         }
-
+        
         public void Dispose()
         {
             if (context == null)
