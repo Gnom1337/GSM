@@ -1,86 +1,171 @@
-import { useEffect, useState } from "react";
-
 import {
     TextField,
     MenuItem,
     FormControl,
     InputLabel,
-    Select
+    Select,
+    Stack,
+    Typography,
+    Paper,
+    Divider,
+    Box
 } from "@mui/material";
 
+import PersonIcon from "@mui/icons-material/Person";
+import BadgeIcon from "@mui/icons-material/Badge";
+import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+
 export default function UserForm({
-    value,
+    value = {},
     mode,
     onChange
 }) {
 
-    const [user, setUser] = useState({
-        fullName: "",
-        login: "",
-        password: "",
-        roleName: 2
-    });
-
-    useEffect(() => {
-
-        if (value) {
-
-            setUser({
-                fullName: value.fullName ?? "",
-                login: value.login ?? "",
-                password: "",
-                roleName: value.roleName ?? 2
-            });
-
-        }
-
-    }, [value]);
-
     const disabled = mode === "view";
 
-    const update = (field, value) => {
+    const update = (field, newValue) => {
 
-        const updated = {
-            ...user,
-            [field]: value
-        };
-
-        setUser(updated);
-
-        onChange(updated);
+        onChange({
+            ...value,
+            [field]: newValue
+        });
 
     };
 
+    if (mode === "view") {
+
+        return (
+
+            <Paper
+                elevation={0}
+                sx={{
+                    p: 3,
+                    borderRadius: 3,
+                    border: "1px solid",
+                    borderColor: "divider"
+                }}
+            >
+
+                <Stack spacing={2}>
+
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                    >
+
+                        <PersonIcon color="primary" />
+
+                        <Box>
+
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
+                                ФИО
+                            </Typography>
+
+                            <Typography variant="h6">
+                                {value.fullName || "—"}
+                            </Typography>
+
+                        </Box>
+
+                    </Stack>
+
+                    <Divider />
+
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                    >
+
+                        <BadgeIcon color="primary" />
+
+                        <Box>
+
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
+                                Логин
+                            </Typography>
+
+                            <Typography variant="h6">
+                                {value.login || "—"}
+                            </Typography>
+
+                        </Box>
+
+                    </Stack>
+
+                    <Divider />
+
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                    >
+
+                        <AdminPanelSettingsIcon color="primary" />
+
+                        <Box>
+
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
+                                Роль
+                            </Typography>
+
+                            <Typography variant="h6">
+                                {value.roleName || "—"}
+                            </Typography>
+
+                        </Box>
+
+                    </Stack>
+
+                </Stack>
+
+            </Paper>
+
+        );
+
+    }
+
     return (
-        <>
+
+        <Stack spacing={2}>
 
             <TextField
                 label="ФИО"
-                value={user.fullName}
-                onChange={(e) => update("fullName", e.target.value)}
+                value={value.fullName ?? ""}
+                onChange={(e) =>
+                    update("fullName", e.target.value)
+                }
                 fullWidth
-                disabled={disabled}
             />
 
             <TextField
                 label="Логин"
-                value={user.login}
-                onChange={(e) => update("login", e.target.value)}
+                value={value.login ?? ""}
+                onChange={(e) =>
+                    update("login", e.target.value)
+                }
                 fullWidth
-                disabled={disabled}
             />
 
-            {mode !== "view" && (
-
-                <TextField
-                    label="Пароль"
-                    type="password"
-                    value={user.password}
-                    onChange={(e) => update("password", e.target.value)}
-                    fullWidth
-                />
-
-            )}
+            <TextField
+                label="Пароль"
+                type="password"
+                value={value.password ?? ""}
+                onChange={(e) =>
+                    update("password", e.target.value)
+                }
+                fullWidth
+            />
 
             <FormControl fullWidth>
 
@@ -89,19 +174,18 @@ export default function UserForm({
                 </InputLabel>
 
                 <Select
-                    value={user.roleName}
+                    value={value.roleName ?? "Оператор"}
                     label="Роль"
-                    disabled={disabled}
                     onChange={(e) =>
                         update("roleName", e.target.value)
                     }
                 >
 
-                    <MenuItem value={"Администратор"}>
+                    <MenuItem value="Администратор">
                         Администратор
                     </MenuItem>
 
-                    <MenuItem value={"Оператор"}>
+                    <MenuItem value="Оператор">
                         Оператор
                     </MenuItem>
 
@@ -109,7 +193,8 @@ export default function UserForm({
 
             </FormControl>
 
-        </>
+        </Stack>
+
     );
 
 }

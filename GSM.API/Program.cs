@@ -94,7 +94,7 @@ builder.Services.AddApiAuth(builder.Configuration);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddTransient<IRequestHandler<AddUserQuerie, BaseResponse<User>>, AddUserQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<GetAllUsersQuerie, List<GetAllUsersResponse>>, GetAllUsersQuerieHandler>();
-//builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<WagonReceipt>, BaseDeleteResponse>, DeleteWagonReceiptQuerieHandler>();
+builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<User>, BaseDeleteResponse>, DeleteUserQuerieHandler>();
 //builder.Services.AddTransient<IRequestHandler<UpdateWagonReceiptQuerie, BaseResponse<WagonReceipt>>, UpdateWagonReceiptQuerieHandler>();
 //builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>, GetWagonReceiptByIdQuerieHandler>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
