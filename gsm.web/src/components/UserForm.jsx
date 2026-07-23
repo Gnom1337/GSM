@@ -10,25 +10,52 @@ import {
     Divider,
     Box
 } from "@mui/material";
-
+import { useEffect, useState } from "react";
 import PersonIcon from "@mui/icons-material/Person";
 import BadgeIcon from "@mui/icons-material/Badge";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 
 export default function UserForm({
-    value = {},
+    value,
     mode,
     onChange
 }) {
 
-    const disabled = mode === "view";
 
-    const update = (field, newValue) => {
+    const [form, setForm] = useState({
+        fullName: "",
+        login: "",
+        roleName: ""
+    });
+    useEffect(() => {
 
-        onChange({
+
+        if (value) {
+
+            setForm({
+
+                fullName: value.fullName ?? "",
+                login: value.login ?? "",
+                roleName: value.roleName ?? ""
+
+            });
+
+        }
+
+    }, [value]);
+    const handleChange = (field, fieldValue) => {
+
+        const updated = {
+
             ...value,
-            [field]: newValue
-        });
+
+            [field]: fieldValue
+
+        };
+
+        setForm(updated);
+
+        onChange(updated);
 
     };
 
@@ -66,7 +93,7 @@ export default function UserForm({
                             </Typography>
 
                             <Typography variant="h6">
-                                {value.fullName || "—"}
+                                {form.fullName}
                             </Typography>
 
                         </Box>
@@ -93,7 +120,7 @@ export default function UserForm({
                             </Typography>
 
                             <Typography variant="h6">
-                                {value.login || "—"}
+                                {form.login}
                             </Typography>
 
                         </Box>
@@ -120,7 +147,7 @@ export default function UserForm({
                             </Typography>
 
                             <Typography variant="h6">
-                                {value.roleName || "—"}
+                                {form.roleName }
                             </Typography>
 
                         </Box>
@@ -143,7 +170,7 @@ export default function UserForm({
                 label="ФИО"
                 value={value.fullName ?? ""}
                 onChange={(e) =>
-                    update("fullName", e.target.value)
+                    handleChange("fullName", e.target.value)
                 }
                 fullWidth
             />
@@ -152,7 +179,7 @@ export default function UserForm({
                 label="Логин"
                 value={value.login ?? ""}
                 onChange={(e) =>
-                    update("login", e.target.value)
+                    handleChange("login", e.target.value)
                 }
                 fullWidth
             />
@@ -162,7 +189,7 @@ export default function UserForm({
                 type="password"
                 value={value.password ?? ""}
                 onChange={(e) =>
-                    update("password", e.target.value)
+                    handleChange("password", e.target.value)
                 }
                 fullWidth
             />
@@ -177,7 +204,7 @@ export default function UserForm({
                     value={value.roleName ?? "Оператор"}
                     label="Роль"
                     onChange={(e) =>
-                        update("roleName", e.target.value)
+                        handleChange("roleName", e.target.value)
                     }
                 >
 

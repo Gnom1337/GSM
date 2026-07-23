@@ -43,7 +43,7 @@ namespace GSM.Infrastructure.Repository
         {
 
             _dbContext.Entry(entity).State = EntityState.Modified;
-            return new Result<T>("Success", $"Запись обновлена", null);
+            return new Result<T>("Success", $"Запись успешно обновлена", null);
         }
 
         public async Task<List<T>> GetAllAsync()

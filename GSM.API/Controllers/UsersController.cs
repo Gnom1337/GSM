@@ -34,16 +34,18 @@ namespace GSM.API.Controllers
             BaseDeleteQuerie<User> request = new BaseDeleteQuerie<User> { Id = Id };
             return Ok(await _mediator.Send(request, token));
         }
-        [HttpPut("Update")]
-        public async Task<IActionResult> UpdateUserAsync(UpdateUserQuerie request, CancellationToken token)
+        [HttpPut("Update/{Id}")]
+        public async Task<IActionResult> UpdateUserAsync(int Id, UpdateUserQuerie request, CancellationToken token)
         {
+            request.UserId = Id;
             return Ok(await _mediator.Send(request, token));
         }
         [HttpGet("GetById/{Id}")]
         public async Task<IActionResult> GetUserByIdAsync(int Id, CancellationToken token)
         {
             BaseGetByIdQuerie<User> request = new BaseGetByIdQuerie<User> { Id = Id };
-            return Ok(await _mediator.Send(request, token));
+            var result = await _mediator.Send(request, token);
+            return Ok(result.entity);
         }
     }
 }

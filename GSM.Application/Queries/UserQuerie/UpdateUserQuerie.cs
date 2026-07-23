@@ -12,7 +12,7 @@ namespace GSM.Application.Queries.UserQuerie
         public int UserId { get; set; }
         public string FullName { get; set; }
         public string Login { get; set; }
-        public string Password { get; set; }
+        public string? Password { get; set; }
         public string RoleName { get; set; }
     }
 }

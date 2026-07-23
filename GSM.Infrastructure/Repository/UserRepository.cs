@@ -36,5 +36,6 @@ namespace GSM.Infrastructure.Repository
         {
             return await _context.Users.AsNoTracking().FirstOrDefaultAsync(c => c.Login == userName);
         }
+        
     }
 }

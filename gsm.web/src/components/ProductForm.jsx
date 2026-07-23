@@ -47,16 +47,15 @@ export default function ProductForm({
 
 
 
-    const handleChange = (field, value) => {
+    const handleChange = (field, fieldValue) => {
 
         const updated = {
 
-            ...form,
+            ...value,
 
-            [field]: value
+            [field]: fieldValue
 
         };
-
 
         setForm(updated);
 

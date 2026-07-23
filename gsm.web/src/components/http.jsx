@@ -1,8 +1,15 @@
 import axios from "axios";
 
-export default axios.create({
+const http = axios.create({
+
     baseURL: "https://localhost:5141/api",
+
     headers: {
+
         "Content-Type": "application/json"
+
     }
+
 });
+
+export default http;

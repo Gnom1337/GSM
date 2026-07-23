@@ -1,20 +1,40 @@
-import axios from "axios";
+import http from "../components/http";
 
-const api = axios.create({
-    baseURL: "https://localhost:5141/api/Products"
-});
+const productsApi = {
 
-export const getProducts = () =>
-    api.get("/GetAll");
+    getAll: async () => {
+        const { data } = await http.get("/Products/GetAll");
+        return data;
+    },
 
-export const getProduct = (id) =>
-    api.get(`GetById/${id}`);
+    getById: async (id) => {
+        const { data } = await http.get(`/Products/GetById/${id}`);
+        return data;
+    },
 
-export const createProduct = (product) =>
-    api.post("", product);
+    create: async (product) => {
+        const { data } = await http.post(
+            "/Products/Create",
+            product
+        );
 
-export const updateProduct = (id, product) =>
-    api.put(`/${id}`, product);
+        return data;
+    },
 
-export const deleteProduct = (id) =>
-    api.delete(`/${id}`);
+    update: async (product) => {
+        const { data } = await http.put(
+            `/Products/Update/${product.productId}`,
+            product
+        );
+
+        return data;
+    },
+
+    remove: async (id) => {
+        const { data } = await http.delete(`/Products/Delete/${id}`);
+        return data;
+    }
+
+};
+
+export default productsApi;

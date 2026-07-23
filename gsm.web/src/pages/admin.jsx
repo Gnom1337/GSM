@@ -1,4 +1,5 @@
-import * as React from 'react';
+import { useEffect, useState } from "react";
+
 import {
     Container,
     Grid,
@@ -6,90 +7,238 @@ import {
     Typography
 } from "@mui/material";
 
+import AdminIcon from "@mui/icons-material/AdminPanelSettings";
+
 import UsersTable from "../components/dataGrid";
 import ProductsTable from "../components/dataGrid";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import AdminIcon from '@mui/icons-material/AdminPanelSettings';
-import ProductForm from "../components/ProductForm";
 import EntityDialog from "../components/EntityDialog";
 import UserForm from "../components/UserForm";
-import Snackbar from '@mui/material/Snackbar';
-import Slide from '@mui/material/Slide';
-import Alert from '@mui/material/Alert';
-function SlideTransition(props) {
-    return <Slide {...props} direction="up" />;
-}
+import ProductForm from "../components/ProductForm";
+import AppSnackbar from "../components/AppSnackbar";
+
+import useSnackbar from "../hooks/useSnackbar";
+
+import usersApi from "../services/usersApi";
+import productsApi from "../services/productsApi";
+
 export default function AdminPage() {
-    
-    
-    const [state, setState] = React.useState({
-        open: false,
-        vertical: 'bottom',
-        horizontal: 'center',
-        Transition: SlideTransition
-    });
-    const { vertical, horizontal, open } = state;
-   
+    const [users, setUsers] = useState([]);
+    const [products, setProducts] = useState([]);
+
     const [usersLoading, setUsersLoading] = useState(true);
     const [productsLoading, setProductsLoading] = useState(true);
 
-    const [rows, setRows] = useState([]);
-    const [products, setProducts] = useState([]);
+    // Пользователи
 
     const [dialogOpen, setDialogOpen] = useState(false);
 
     const [mode, setMode] = useState("add");
 
-    const [selectedUser, setSelectedUser] = useState(null);
+    const [editedUser, setEditedUser] = useState({
+        fullName: "",
+        login: "",
+        password: "",
+        roleName: "Оператор"
+    });
 
-    const [editedUser, setEditedUser] = useState({});
-    const [selectedProduct, setSelectedProduct] = useState(null);
-    const [editedProduct, setEditedProduct] = useState({});
+    // Продукты
+
     const [productDialogOpen, setProductDialogOpen] = useState(false);
-    const [productMode, setProductMode] = useState("add");
-    const loadProducts = async () => {
-        setProductsLoading(true);
-       await axios.get("https://localhost:5141/api/Products/GetAll")
-            .then(res => {
-                setProducts(res.data);
-            })
-            .finally(() => {
-                setProductsLoading(false);
-            });
 
-    };
+    const [productMode, setProductMode] = useState("add");
+
+    const [editedProduct, setEditedProduct] = useState({
+        name: "",
+        density: ""
+    });
+
+    // Snackbar
+
+    const {
+
+        snackbar,
+
+        showSnackbar,
+
+        closeSnackbar
+
+    } = useSnackbar();
+
     const loadUsers = async () => {
 
         setUsersLoading(true);
 
-        await axios.get("https://localhost:5141/api/Users/GetAll")
-            .then(res => {
-                setRows(res.data);
-            })
-            .finally(() => {
-               setUsersLoading(false);
-            });
+        try {
+
+            const result = await usersApi.getAll();
+
+            setUsers(result);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+        finally {
+
+            setUsersLoading(false);
+
+        }
+
     };
+    const loadProducts = async () => {
 
+        setProductsLoading(true);
 
+        try {
+
+            const result = await productsApi.getAll();
+
+            setProducts(result);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+        finally {
+
+            setProductsLoading(false);
+
+        }
+
+    };
     useEffect(() => {
 
         Promise.all([
-           loadUsers(),
-           loadProducts()
+            loadUsers(),
+            loadProducts()
         ]);
 
     }, []);
+    const handleAddUser = () => {
+
+        setMode("add");
+
+        setEditedUser({
+
+            fullName: "",
+
+            login: "",
+
+            password: "",
+
+            roleName: "Оператор"
+
+        });
+
+        setDialogOpen(true);
+
+    };
+    const handleViewUser = async (row) => {
+
+        try {
+
+            const result = await usersApi.getById(row.userId);
+
+            setEditedUser(result);
+
+            setMode("view");
+
+            setDialogOpen(true);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+    };
+    const handleEditUser = async (row) => {
+
+        try {
+
+            const result = await usersApi.getById(row.userId);
+
+            setEditedUser(result);
+
+            setMode("edit");
+
+            setDialogOpen(true);
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+    };
+    const saveUser = async () => {
+
+        try {
+
+            const result =
+                mode === "add"
+                    ? await usersApi.create(editedUser)
+                    : await usersApi.update(editedUser);
+
+            showSnackbar(result);
+
+            if (result.Status || result.status) {
+
+                setDialogOpen(false);
+
+                await loadUsers();
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+    };
+    const handleDeleteUser = async (row) => {
+
+        if (!window.confirm(`Удалить ${row.fullName}?`))
+            return;
+
+        try {
+
+            const result = await usersApi.remove(row.userId);
+
+            showSnackbar(result);
+
+            if (result.Status || result.status) {
+
+                await loadUsers();
+
+            }
+
+        }
+        catch (error) {
+
+            console.error(error);
+
+        }
+
+    };
     const handleAddProduct = () => {
 
         setProductMode("add");
 
-        setSelectedProduct(null);
-
         setEditedProduct({
+
             name: "",
+
             density: ""
+
         });
 
         setProductDialogOpen(true);
@@ -99,30 +248,15 @@ export default function AdminPage() {
 
         try {
 
-            const res = await axios.get(
-                `https://localhost:5141/api/Products/GetById/${row.productId}`
+            const result = await productsApi.getById(
+                row.productId
             );
 
-
-            const product = {
-
-                productId: res.data.productId ?? res.data.ProductId,
-
-                name: res.data.name ?? res.data.Name,
-
-                density: res.data.density ?? res.data.Density
-
-            };
-
-
-            setSelectedProduct(product);
-
-            setEditedProduct(product);
+            setEditedProduct(result);
 
             setProductMode("view");
 
             setProductDialogOpen(true);
-
 
         }
         catch (error) {
@@ -132,33 +266,19 @@ export default function AdminPage() {
         }
 
     };
-    const handleViewUser = async (row) => {
+    const handleEditProduct = async (row) => {
 
         try {
 
-            const res = await axios.get(
-                `https://localhost:5141/api/Users/GetById/${row.userId}`
+            const result = await productsApi.getById(
+                row.productId
             );
 
+            setEditedProduct(result);
 
-            const user = {
-
-                userId: res.data.userId ?? res.data.userId,
-                fullName: res.data.fullName ?? res.data.FullName,
-                login: res.data.login ?? res.data.Login,
-                roleName: res.data.roleName ?? res.data.RoleName
-
-            };
-
-
-            setSelectedProduct(user);
-
-            setEditedProduct(user);
-
-            setProductMode("view");
+            setProductMode("edit");
 
             setProductDialogOpen(true);
-
 
         }
         catch (error) {
@@ -166,280 +286,116 @@ export default function AdminPage() {
             console.error(error);
 
         }
-    };
-
-    const handleEditProduct = (row) => {
-
-        setProductMode("edit");
-
-        setSelectedProduct(row);
-
-        setEditedProduct(row);
-
-        setProductDialogOpen(true);
 
     };
-    
     const saveProduct = async () => {
 
-
         try {
 
+            const result =
+                productMode === "add"
+                    ? await productsApi.create(editedProduct)
+                    : await productsApi.update(editedProduct);
 
-            if (productMode === "add") {
+            showSnackbar(result);
 
+            if (result.Status || result.status) {
 
-                await axios.post(
-                    "https://localhost:5141/api/Products/Create",
-                    editedProduct
-                );
+                setProductDialogOpen(false);
 
-
-            }
-
-
-
-            if (productMode === "edit") {
-
-
-                await axios.put(
-                    `https://localhost:5141/api/Products/Update/${editedProduct.productId}`,
-                    editedProduct
-                );
-
+                await loadProducts();
 
             }
-
-            
-            setState({
-                ...state, vertical: 'bottom',
-                horizontal: 'center', open: true });
-            setProductDialogOpen(false);
-
-
-            loadProducts();
-
 
         }
         catch (error) {
 
-            console.error(
-                "Ошибка сохранения продукта",
-                error
-            );
+            console.error(error);
 
         }
 
     };
     const handleDeleteProduct = async (row) => {
 
-
-        const confirmDelete = window.confirm(
-            `Удалить продукт ${row.name}?`
-        );
-
-
-        if (!confirmDelete)
+        if (!window.confirm(`Удалить ${row.name}?`))
             return;
 
-
-
         try {
 
-
-            await axios.delete(
-
-                `https://localhost:5141/api/Products/Delete/${row.productId}`
-
-            );
-            setState({
-                ...state, vertical: 'bottom',
-                horizontal: 'center', open: true
-            });
-
-            loadProducts();
-
-
-        }
-        catch (error) {
-
-            console.error(
-                "Ошибка удаления",
-                error
+            const result = await productsApi.remove(
+                row.productId
             );
 
-        }
+            showSnackbar(result);
 
+            if (result.Status || result.status) {
 
-    };
-    const handleAddUser = () => {
-
-        setMode("add");
-
-        setSelectedUser(null);
-
-        setEditedUser({
-            fullName: "",
-            login: "",
-            password: "",
-            roleName: "Оператор"
-        });
-
-        setDialogOpen(true);
-    };
-
-
-
-    
-
-
-    const handleEditUser = (row) => {
-
-        setMode("edit");
-
-        setSelectedUser(row);
-
-        setEditedUser(row);
-
-        setDialogOpen(true);
-    };
-
-
-
-    // СОХРАНЕНИЕ
-    const saveUser = async () => {
-
-        try {
-
-            if (mode === "add") {
-
-                await axios.post(
-                    "https://localhost:5141/api/Users/Create",
-                    editedUser
-                );
+                await loadProducts();
 
             }
 
-
-            if (mode === "edit") {
-
-                await axios.put(
-                    `https://localhost:5141/api/Users/Update/${editedUser.userId}`,
-                    editedUser
-                );
-
-            }
-
-            setState({
-                ...state, vertical: 'bottom',
-                horizontal: 'center', open: true
-            });
-            setDialogOpen(false);
-
-            loadUsers();
-
-
         }
         catch (error) {
 
-            console.error(
-                "Ошибка сохранения пользователя",
-                error
-            );
+            console.error(error);
 
         }
 
     };
-
-
-
-
-    // УДАЛЕНИЕ
-    const handleDeleteUser = async (row) => {
-
-        const confirmDelete = window.confirm(
-            `Удалить пользователя ${row.fullName}?`
-        );
-
-
-        if (!confirmDelete)
-            return;
-
-
-        try {
-
-            await axios.delete(
-                `https://localhost:5141/api/Users/Delete/${row.userId}`
-            );
-
-            setState({
-                ...state, vertical: 'bottom',
-                horizontal: 'center', open: true
-            });
-            loadUsers();
-
-        }
-        catch (error) {
-
-            console.error(
-                "Ошибка удаления пользователя",
-                error
-            );
-
-        }
-
-    };
-
-    const handleClose = () => {
-        setState({ ...state, open: false });
-    };
-    
-
     const columnsUsers = [
+
         {
             field: "userId",
             headerName: "ID",
+            flex: 0.3
         },
+
         {
             field: "fullName",
             headerName: "ФИО",
+            flex: 1
         },
+
         {
             field: "login",
             headerName: "Логин",
+            flex: 0.8
         },
+
         {
             field: "roleName",
             headerName: "Роль",
+            flex: 0.7
         }
+
     ];
 
-
-
     const columnsProducts = [
+
         {
             field: "productId",
             headerName: "ID",
+            flex: 0.3
         },
+
         {
             field: "name",
             headerName: "Наименование",
+            flex: 1
         },
+
         {
             field: "density",
             headerName: "Плотность",
-        },
+            flex: 0.6
+        }
+
     ];
-
-
-
-
     return (
 
         <Container maxWidth={false}>
 
             <Stack spacing={3}>
-
 
                 <Stack
                     direction="row"
@@ -449,187 +405,151 @@ export default function AdminPage() {
 
                     <AdminIcon
                         color="secondary"
-                        sx={{ fontSize: 28 }}
+                        sx={{ fontSize: 30 }}
                     />
 
                     <Typography
                         variant="h5"
                         fontWeight={600}
                     >
+
                         Панель администратора
+
                     </Typography>
 
                 </Stack>
 
 
+                <Grid
+                    container
+                    spacing={3}
+                >
 
-                <Grid container spacing={3}>
-
-
-                    <Grid size={{ xs: 12, lg: 6 }}>
-
+                    <Grid
+                        size={{
+                            xs: 12,
+                            lg: 6
+                        }}
+                    >
 
                         <UsersTable
 
-                            sx={{
-                                height: "60vh"
-                            }}
-
                             title="Пользователи"
 
-                            rows={rows}
+                            rows={users}
 
                             columns={columnsUsers}
 
                             loading={usersLoading}
-                            
-                            getRowId={
-                                row => row.userId
-                            }
 
+                            getRowId={(row) => row.userId}
 
                             onAdd={handleAddUser}
 
+                            onView={handleViewUser}
 
-                            onEdit={
-                                handleEditUser
-                            }
+                            onEdit={handleEditUser}
 
+                            onDelete={handleDeleteUser}
 
-                            onDelete={
-                                handleDeleteUser
-                            }
-
-
-                            onView={
-                                handleViewUser
-                            }
+                            sx={{
+                                height: "65vh"
+                            }}
 
                         />
-
 
                     </Grid>
 
 
-
-                    <Grid size={{ xs: 12, lg: 6 }}>
-
+                    <Grid
+                        size={{
+                            xs: 12,
+                            lg: 6
+                        }}
+                    >
 
                         <ProductsTable
 
-                            sx={{
-                                height: "60vh"
-                            }}
-
                             title="Продукты"
-
 
                             rows={products}
 
-
                             columns={columnsProducts}
 
-
                             loading={productsLoading}
-                            
 
-                            getRowId={
-                                row => row.productId
-                            }
-                            
+                            getRowId={(row) => row.productId}
 
-                            onAdd={
-                                handleAddProduct
-                            }
+                            onAdd={handleAddProduct}
 
+                            onView={handleViewProduct}
 
-                            onEdit={
-                                handleEditProduct
-                            }
+                            onEdit={handleEditProduct}
 
+                            onDelete={handleDeleteProduct}
 
-                            onDelete={
-                                handleDeleteProduct
-                            }
-
-
-                            onView={
-                                handleViewProduct
-                            }
+                            sx={{
+                                height: "65vh"
+                            }}
 
                         />
 
-
                     </Grid>
-
 
                 </Grid>
 
-
-
             </Stack>
-
 
 
             <EntityDialog
 
                 open={dialogOpen}
 
-                title={
-                    mode === "add"
-                        ?
-                        "Добавить пользователя"
-                        :
-                        mode === "edit"
-                            ?
-                            "Редактирование пользователя"
-                            :
-                            "Просмотр пользователя"
-                }
-
-
                 mode={mode}
 
-
-                onClose={
-                    () => setDialogOpen(false)
+                title={
+                    mode === "add"
+                        ? "Добавить пользователя"
+                        : mode === "edit"
+                            ? "Редактирование пользователя"
+                            : "Просмотр пользователя"
                 }
 
+                onClose={() => setDialogOpen(false)}
 
                 onSave={saveUser}
 
             >
 
-
                 <UserForm
+
                     value={editedUser}
+
                     mode={mode}
+
                     onChange={setEditedUser}
+
                 />
 
-
             </EntityDialog>
+
+
+
             <EntityDialog
 
                 open={productDialogOpen}
 
-                title={
-                    productMode === "add"
-                        ?
-                        "Добавить продукт"
-                        :
-                        productMode === "edit"
-                            ?
-                            "Редактирование продукта"
-                            :
-                            "Просмотр продукта"
-                }
-
                 mode={productMode}
 
-                onClose={
-                    () => setProductDialogOpen(false)
+                title={
+                    productMode === "add"
+                        ? "Добавить продукт"
+                        : productMode === "edit"
+                            ? "Редактирование продукта"
+                            : "Просмотр продукта"
                 }
+
+                onClose={() => setProductDialogOpen(false)}
 
                 onSave={saveProduct}
 
@@ -646,23 +566,21 @@ export default function AdminPage() {
                 />
 
             </EntityDialog>
-            <Snackbar
-                anchorOrigin={{ vertical, horizontal }}
-                open={open}
-                key={SlideTransition}
-                slots={{ transition: state.Transition }}
-                autoHideDuration={2000} onClose={handleClose}
-            >
-                <Alert
-                    onClose={handleClose}
-                    severity="success"
-                    variant="outlined"
-                    sx={{ width: '100%' }}
-                >
-                    Операция прошла успешно!
-                </Alert>
-            </Snackbar>
+
+
+            <AppSnackbar
+
+                open={snackbar.open}
+
+                severity={snackbar.severity}
+
+                message={snackbar.message}
+
+                onClose={closeSnackbar}
+
+            />
+
         </Container>
 
     );
-}
+    }

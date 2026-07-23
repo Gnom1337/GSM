@@ -1,20 +1,36 @@
-import axios from "axios";
+import http from "../components/http";
 
-const api = axios.create({
-    baseURL: "https://localhost:5141/api/Users"
-});
+const usersApi = {
 
-export const getUsers = () =>
-    api.get("/GetAll");
+    getAll: async () => {
+        const { data } = await http.get("/Users/GetAll");
+        return data;
+    },
 
-export const getUser = (id) =>
-    api.get(`/${id}`);
+    getById: async (id) => {
+        const { data } = await http.get(`/Users/GetById/${id}`);
+        return data;
+    },
 
-export const createUser = (user) =>
-    api.post("", user);
+    create: async (user) => {
+        const { data } = await http.post("/Users/Create", user);
+        return data;
+    },
 
-export const updateUser = (id, user) =>
-    api.put(`/${id}`, user);
+    update: async (user) => {
+        const { data } = await http.put(
+            `/Users/Update/${user.userId}`,
+            user
+        );
 
-export const deleteUser = (id) =>
-    api.delete(`/${id}`);
+        return data;
+    },
+
+    remove: async (id) => {
+        const { data } = await http.delete(`/Users/Delete/${id}`);
+        return data;
+    }
+
+};
+
+export default usersApi;
