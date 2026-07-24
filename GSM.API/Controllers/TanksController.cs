@@ -33,9 +33,10 @@ namespace GSM.API.Controllers
             BaseDeleteQuerie<Tank> request = new BaseDeleteQuerie<Tank> { Id = Id };
             return Ok(await _mediator.Send(request, token));
         }
-        [HttpPut("Update")]
-        public async Task<IActionResult> UpdateTankAsync(UpdateTankQuerie request, CancellationToken token) 
+        [HttpPut("Update/{Id}")]
+        public async Task<IActionResult> UpdateTankAsync(int Id, UpdateTankQuerie request, CancellationToken token) 
         {
+            request.TankId = Id;
             return Ok(await _mediator.Send(request, token));
         }
         [HttpGet("GetById/{Id}")]

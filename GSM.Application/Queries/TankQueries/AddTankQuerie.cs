@@ -9,7 +9,6 @@ namespace GSM.Application.Queries.TankQueries
         public string TankNumber { get; set; }
         public double CapacityLiters { get; set; }
         public int ProductId { get; set; }
-        public Product Product { get; set; }
         public double CurentVolumeLiters { get; set; }
     }
 }

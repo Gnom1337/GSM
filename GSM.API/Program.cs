@@ -36,6 +36,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(StartupBase).Assembly));
 builder.Services.AddDbContext<ApplicationDbContext>();
+builder.Services.AddAuthentication();
 builder.Services.AddAuthorization();
 //Tank
 builder.Services.AddScoped<IRepositoryBase<Tank>, RepositoryBase<Tank>>();
@@ -97,6 +98,7 @@ builder.Services.AddTransient<IRequestHandler<GetAllUsersQuerie, List<GetAllUser
 builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<User>, BaseDeleteResponse>, DeleteUserQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<UpdateUserQuerie, BaseResponse<User>>, UpdateUserQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<User>, BaseGetByIdResponse<User>>, GetUserByIdQuerieHandler>();
+builder.Services.AddScoped<ITankRepository, TankRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -115,7 +117,7 @@ app.UseCookiePolicy(new CookiePolicyOptions
     Secure = CookieSecurePolicy.Always
 });
 app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 app.UseCors(x => x
     .AllowAnyMethod()
