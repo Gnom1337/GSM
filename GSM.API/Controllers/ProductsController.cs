@@ -2,11 +2,13 @@
 using GSM.Application.Queries.ProductQueries;
 using GSM.Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GSM.API.Controllers
 {
+    
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -16,6 +18,7 @@ namespace GSM.API.Controllers
         {
             _mediator = mediator;
         }
+        [Authorize(Roles = "Admin")]
         [HttpPost("Create")]
         public async Task<IActionResult> CreateProductAsync(AddProductQuerie request, CancellationToken token)
         {
@@ -26,12 +29,14 @@ namespace GSM.API.Controllers
         {
             return Ok(await _mediator.Send(new GetAllProductsQuerie()));
         }
+        [Authorize(Roles = "Admin")]
         [HttpDelete("Delete/{Id}")]
         public async Task<IActionResult> DeleteProductAsync(int Id, CancellationToken token)
         {
             BaseDeleteQuerie<Product> request = new BaseDeleteQuerie<Product> { Id = Id };
             return Ok(await _mediator.Send(request, token));
         }
+        [Authorize(Roles = "Admin")]
         [HttpPut("Update/{Id}")]
         public async Task<IActionResult> UpdateProductAsync(int Id, UpdateProductQuerie request, CancellationToken token)
         {

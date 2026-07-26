@@ -1,6 +1,8 @@
 using GSM.API.Extensions;
 using GSM.Application.Abstractions;
+using GSM.Application.DTOs;
 using GSM.Application.Handlers.DailyBalanceHandlers;
+using GSM.Application.Handlers.DashboardHandlers;
 using GSM.Application.Handlers.DispatchHandlers;
 using GSM.Application.Handlers.ProductHandlers;
 using GSM.Application.Handlers.TankHandlers;
@@ -9,6 +11,7 @@ using GSM.Application.Handlers.UserHandler;
 using GSM.Application.Handlers.WagonReceiptHandlers;
 using GSM.Application.Queries;
 using GSM.Application.Queries.DailyBalanceQueries;
+using GSM.Application.Queries.DashboardQueries;
 using GSM.Application.Queries.DispatchQueries;
 using GSM.Application.Queries.ProductQueries;
 using GSM.Application.Queries.TankMeasurmentQueries;
@@ -87,7 +90,17 @@ builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<WagonReceipt>, Ba
 builder.Services.AddTransient<IRequestHandler<UpdateWagonReceiptQuerie, BaseResponse<WagonReceipt>>, UpdateWagonReceiptQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<WagonReceipt>, BaseGetByIdResponse<WagonReceipt>>, GetWagonReceiptByIdQuerieHandler>();
 
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Client", policy =>
+    {
+        policy
+            .WithOrigins("https://localhost:5173")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
 
 
 
@@ -98,13 +111,26 @@ builder.Services.AddTransient<IRequestHandler<GetAllUsersQuerie, List<GetAllUser
 builder.Services.AddTransient<IRequestHandler<BaseDeleteQuerie<User>, BaseDeleteResponse>, DeleteUserQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<UpdateUserQuerie, BaseResponse<User>>, UpdateUserQuerieHandler>();
 builder.Services.AddTransient<IRequestHandler<BaseGetByIdQuerie<User>, BaseGetByIdResponse<User>>, GetUserByIdQuerieHandler>();
+
+
+builder.Services.AddTransient<IRequestHandler<GetAllDataQuerie, DashboardDto>, GetAllDataQuerieHandler>();
 builder.Services.AddScoped<ITankRepository, TankRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IJwtProvider, JwtProvider>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<DataSeeder>();
+builder.Services.Configure<JwtOptions>(
+    builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpContextAccessor();
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var seeder = scope.ServiceProvider.GetRequiredService<DataSeeder>();
+
+    await seeder.SeedAdminAsync();
+}
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

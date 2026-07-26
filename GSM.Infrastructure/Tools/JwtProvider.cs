@@ -19,19 +19,23 @@ namespace GSM.Infrastructure.Tools
         }
         public string GenerateToken(string userId, string fullName, string role)
         {
-            Claim[] claims = [new("userId", userId), new ("fullName", fullName), new("role", role)];
+            Claim[] claims =
+            [
+                new Claim(ClaimTypes.NameIdentifier, userId),
+                new Claim(ClaimTypes.Name, fullName),
+                new Claim(ClaimTypes.Role, role)
+            ];
 
-            var creds = new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key)), SecurityAlgorithms.HmacSha256);
+            var creds = new SigningCredentials(
+                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key)),
+                SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 claims: claims,
                 signingCredentials: creds,
-                expires: DateTime.UtcNow.AddDays(_options.ExpiresDays)
-                );
+                expires: DateTime.UtcNow.AddDays(_options.ExpiresDays));
 
-            var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return tokenValue;
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

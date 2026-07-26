@@ -18,7 +18,7 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
 
         public async Task<List<WagonReceipt>> Handle(GetAllWagonReceiptsQuerie request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.WagonReceiptRepository.GetAllAsync();
+            return await _unitOfWork.WagonReceiptRepository.GetAllAsync(null, x=>x.Product, x=>x.Tank);
         }
     }
 }

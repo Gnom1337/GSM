@@ -9,6 +9,9 @@ import ShipmentPage from "./pages/Shipment";
 import AdminPage from "./pages/Admin";
 import LoginPage from "./pages/login";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import AuthProvider from "./components/authProvider";
+import ProtectedRoute from "./components/protectedRoute";
+import RoleRoute from "./components/RoleRoute";
 const theme = createTheme({
     palette: {
         primary: deepPurple,
@@ -19,26 +22,31 @@ const theme = createTheme({
 function App() {
     return (
         <ThemeProvider theme={theme}>
+            <AuthProvider>
+                <BrowserRouter>
+                    <Routes>
 
-            <BrowserRouter>
-                <Routes>
+                        <Route path="/login" element={<LoginPage />} />
 
-                    {/* Авторизация без Layout */}
-                    <Route path="/login" element={<LoginPage />} />
+                        <Route element={<ProtectedRoute />}>
 
-                    {/* Все остальные страницы с Layout */}
-                    <Route path="/" element={<ResponsiveDrawer />}>
-                        <Route index element={<StatsPage />} />
-                        <Route path="stats" element={<StatsPage />} />
-                        <Route path="incoming" element={<IncomingPage />} />
-                        <Route path="tanks" element={<TanksPage />} />
-                        <Route path="reports" element={<ReportsPage />} />
-                        <Route path="shipment" element={<ShipmentPage />} />
-                        <Route path="admin" element={<AdminPage />} />
-                    </Route>
+                            <Route path="/" element={<ResponsiveDrawer />}>
+                                <Route index element={<StatsPage />} />
+                                <Route path="stats" element={<StatsPage />} />
+                                <Route path="incoming" element={<IncomingPage />} />
+                                <Route path="tanks" element={<TanksPage />} />
+                                <Route path="reports" element={<ReportsPage />} />
+                                <Route path="shipment" element={<ShipmentPage />} />
+                                <Route element={<RoleRoute roles={["Admin"]} />}>
+                                    <Route path="admin" element={<AdminPage />} />
+                                </Route>
+                            </Route>
 
-                </Routes>
-            </BrowserRouter>
+                        </Route>
+
+                    </Routes>
+                </BrowserRouter>
+            </AuthProvider>
         </ThemeProvider>
     );
 }

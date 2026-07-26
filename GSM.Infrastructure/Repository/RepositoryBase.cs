@@ -2,6 +2,7 @@
 using GSM.Domain.Models;
 using GSM.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace GSM.Infrastructure.Repository
 {
@@ -49,6 +50,36 @@ namespace GSM.Infrastructure.Repository
         public async Task<List<T>> GetAllAsync()
         {
             return await _dbContext.Set<T>().AsNoTracking().ToListAsync();
+        }
+        public async Task<List<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, params Expression<Func<T, object>>[] includeProperties)
+        {
+            IQueryable<T> query = _dbContext.Set<T>().AsNoTracking();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+            foreach (var includeProperty in includeProperties)
+            {
+                query = query.Include(includeProperty);
+            }
+
+            return await query.ToListAsync();
+        }
+        public async Task<double> GetSumAsync(
+    Expression<Func<T, bool>>? predicate = null,
+    Expression<Func<T, double>>? selector = null!)
+        {
+            if (selector == null) throw new ArgumentNullException(nameof(selector));
+
+            IQueryable<T> query = _dbContext.Set<T>().AsNoTracking();
+
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+
+            return await query.SumAsync(selector);
         }
     }
 }

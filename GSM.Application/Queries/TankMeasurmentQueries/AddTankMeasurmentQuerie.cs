@@ -11,10 +11,8 @@ namespace GSM.Application.Queries.TankMeasurmentQueries
     public class AddTankMeasurmentQuerie : IRequest<BaseResponse<TankMeasurement>>
     {
         public int TankId { get; set; }
-        public Tank Tank { get; set; }
         public double VolumeLiters { get; set; }
         public int UserId { get; set; }
-        public User User { get; set; }
         public string? Note { get; set; }
     }
 }

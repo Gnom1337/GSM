@@ -16,9 +16,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import Chip from '@mui/material/Chip';
+import { Chip, Tooltip } from "@mui/material";
 import Door from '@mui/icons-material/LogoutOutlined';
 import Stats from '@mui/icons-material/BarChart';
 import Incoming from '@mui/icons-material/CallReceived';
@@ -26,16 +24,18 @@ import Tank from '@mui/icons-material/OilBarrel';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import Report from '@mui/icons-material/Assignment';
 import { Outlet, useNavigate } from "react-router-dom";
-
+import { useContext } from "react";
+import AuthContext from "../context/authContext";
+import { logout } from "../services/authService";
+import { roleNames } from "./roles";
 const drawerWidth = 240;
 
 
-function ResponsiveDrawer(props) {
+function ResponsiveDrawer() {
     const navigate = useNavigate();
-    const { window } = props;
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [isClosing, setIsClosing] = React.useState(false);
-
+    const { user } = useContext(AuthContext);
     const handleDrawerClose = () => {
         setIsClosing(true);
         setMobileOpen(false);
@@ -51,17 +51,27 @@ function ResponsiveDrawer(props) {
         }
     };
     const [auth] = React.useState(true);
-    const [anchorEl, setAnchorEl] = React.useState(null);
+    const { setIsAuthenticated } = useContext(AuthContext);
 
+    const handleLogout = async () => {
+        try {
+            if (!window.confirm("Вы действительно хотите выйти из системы?")) {
+                return;
+            }
+            await logout();
+
+            setIsAuthenticated(false);
+
+            navigate("/login", { replace: true });
+        } catch (err) {
+            console.error(err);
+        }
+    };
     
 
-    const handleMenu = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
 
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
+
+
     
     const drawer = (
         <Box sx={{ flexGrow: 1, overflowY: 'auto' }}>
@@ -75,7 +85,13 @@ function ResponsiveDrawer(props) {
                 })}
             >
                 {/* Здесь может быть ваш логотип или название приложения */}
-                <Chip icon={<AccountCircle />} label="Грибов Данил" color="primary" />
+                <Tooltip title={user?.fullName || ""} arrow>
+                    <Chip
+                        icon={<AccountCircle />}
+                        label={user?.fullName}
+                        color="primary"
+                    />
+                </Tooltip>
             </Toolbar>
             <Divider />
 
@@ -129,7 +145,10 @@ function ResponsiveDrawer(props) {
                         
                 
             </List>
-            <Divider />
+            {user?.role === "Admin" && (
+                <Divider/>
+            )}
+            {user?.role === "Admin" && (
             <List>
                 {['Админ панель'].map((text) => (
                     <ListItem key={text} disablePadding>
@@ -142,11 +161,10 @@ function ResponsiveDrawer(props) {
                     </ListItem>
                 ))}
                 </List>
+            )}
         </Box>
     );
 
-    // Remove this const when copying and pasting into your project.
-    const container = window !== undefined ? () => window().document.body : undefined;
     
     return (
         <Box sx={{ display: 'flex' }}>
@@ -175,32 +193,12 @@ function ResponsiveDrawer(props) {
                         <div>
                             <IconButton
                                 size="large"
-                                aria-label="account of current user"
-                                aria-controls="menu-appbar"
-                                aria-haspopup="true"
-                                onClick={handleMenu}
                                 color="inherit"
+                                onClick={handleLogout}
                             >
                                 <Door />
                             </IconButton>
-                            <Menu
-                                id="menu-appbar"
-                                anchorEl={anchorEl}
-                                anchorOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                keepMounted
-                                transformOrigin={{
-                                    vertical: 'top',
-                                    horizontal: 'right',
-                                }}
-                                open={Boolean(anchorEl)}
-                                onClose={handleClose}
-                            >
-                                <MenuItem onClick={handleClose}>Profile</MenuItem>
-                                <MenuItem onClick={handleClose}>My account</MenuItem>
-                            </Menu>
+                           
                         </div>
                     )}
                 </Toolbar>
@@ -212,7 +210,6 @@ function ResponsiveDrawer(props) {
             >
                 {/* The implementation can be swapped with js to avoid SEO duplication of links. */}
                 <Drawer
-                    container={container}
                     variant="temporary"
                     open={mobileOpen}
                     onTransitionEnd={handleDrawerTransitionEnd}
@@ -255,8 +252,17 @@ function ResponsiveDrawer(props) {
                     >
 
                         {/* Вариант Б: Текст копирайта или версии */}
-                        <Typography variant="caption" color="text.secondary" display="block" sx={{ mt: 1 }}>
-                            <Chip label="Администратор" color="secondary" variant="outlined" />
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            display="block"
+                            sx={{ mt: 1 }}
+                        >
+                            <Chip
+                                label={roleNames[user?.role] ?? user?.role}
+                                color="secondary"
+                                variant="outlined"
+                            />
                         </Typography>
                     </Box>
                 </Drawer>

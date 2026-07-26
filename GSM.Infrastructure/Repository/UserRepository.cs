@@ -29,6 +29,7 @@ namespace GSM.Infrastructure.Repository
                     Login = c.Login,
                     RoleName = c.RoleName
                 })
+                .Skip(1)
                 .ToListAsync();
         }
 

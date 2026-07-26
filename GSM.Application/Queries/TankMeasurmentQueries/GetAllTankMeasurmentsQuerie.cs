@@ -8,5 +8,6 @@ namespace GSM.Application.Queries.TankMeasurmentQueries
 {
     public class GetAllTankMeasurmentsQuerie : IRequest<List<TankMeasurement>>
     {
+        public int TankId {  get; set; }
     }
 }

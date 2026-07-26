@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import {
     Container,
@@ -11,33 +11,33 @@ import Stats from '@mui/icons-material/BarChart';
 import DashboardFilters from "../components/DashboardFilters";
 import StatCards from "../components/StatCards";
 import OperationTimeline from "../components/OperationTimeline";
-import { getDashboard } from "../services/dashboardApi";
+import dashboardApi from "../services/dashboardApi";
 import FuelMovementChart from "../components/FuelMovementChart";
 import TankStatusCards from "../components/TankStatusCards";
 export default function DashboardPage() {
 
-    const [from, setFrom] = useState(dayjs().startOf("month"));
+    const [from, setFrom] = useState(
+        dayjs().subtract(30, "day")
+    );
 
-    const [to, setTo] = useState(dayjs());
+    const [to, setTo] = useState(
+        dayjs().add(1, "day")
+    );
 
     const [dashboard, setDashboard] = useState({});
 
     const load = async () => {
-        console.log("before");
 
-        const data = await getDashboard();
+        const data = await dashboardApi.getDashboard(
 
-        console.log("after");
+            from.format("YYYY-MM-DD"),
 
-        setDashboard({
-            totalReceived: data.totalReceived,
-            totalDispatched: data.totalDispatched,
-            totalLoss: data.totalLoss,
-            currentVolume: data.currentVolume,
-            dailyStats: data.dailyStats,
-            operations: data.operations,
-            tanks : data.tanks
-        });
+            to.format("YYYY-MM-DD")
+
+        );
+
+        setDashboard(data);
+
     };
 
     useEffect(() => {

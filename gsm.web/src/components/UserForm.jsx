@@ -161,7 +161,7 @@ export default function UserForm({
         );
 
     }
-
+    
     return (
 
         <Stack spacing={2}>
@@ -201,21 +201,26 @@ export default function UserForm({
                 </InputLabel>
 
                 <Select
-                    value={value.roleName ?? "Оператор"}
+                    value={value.roleName ?? "Operator"}
                     label="Роль"
                     onChange={(e) =>
                         handleChange("roleName", e.target.value)
                     }
                 >
 
-                    <MenuItem value="Администратор">
+                    <MenuItem value="Admin">
                         Администратор
                     </MenuItem>
 
-                    <MenuItem value="Оператор">
+                    <MenuItem value="Operator">
                         Оператор
                     </MenuItem>
-
+                    <MenuItem value="Warehouse_keeper">
+                        Кладовщик
+                    </MenuItem>
+                    <MenuItem value="Manager">
+                        Менеджер
+                    </MenuItem>
                 </Select>
 
             </FormControl>

@@ -24,17 +24,21 @@ namespace GSM.Application.Handlers.UserHandler
 
         public async Task<BaseResponse<User>> Handle(AddUserQuerie request, CancellationToken cancellationToken)
         {
-            var passwordHash = _passwordHasher.GenerateHash(request.Password);
+            var user = await _userRepository.GetByUserNameAsync(request.Login);
+            if(user != null)
+            {
+                return new BaseResponse<User> { Status = "Error", Message = "Пользователь с таким логином уже существует" };
+            }
             var result = await _userRepository.AddAsync(new User
             {
                 FullName = request.FullName,
                 Login = request.Login,
-                PasswordHash = passwordHash,
+                PasswordHash = _passwordHasher.GenerateHash(request.Password),
                 RoleName = request.RoleName,
             });
-            await _unitOfWork.SaveChangesAsync();
             if(result.Status == "Success")
             {
+                await _unitOfWork.SaveChangesAsync();
                 return new BaseResponse<User>
                 {
                     Message = result.Message,

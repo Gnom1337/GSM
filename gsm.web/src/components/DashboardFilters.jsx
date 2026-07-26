@@ -24,12 +24,14 @@ export default function DashboardFilters({
                         label="Дата с"
                         value={from}
                         onChange={setFrom}
+                        format="DD/MM/YYYY"
                     />
 
                     <DatePicker
                         label="Дата по"
                         value={to}
                         onChange={setTo}
+                        format="DD/MM/YYYY"
                     />
                 </Stack>
 

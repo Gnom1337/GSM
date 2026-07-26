@@ -27,6 +27,14 @@ namespace GSM.Application.Handlers.UserHandler
             var entity = await _userRepository.GetById(request.UserId);
             if (entity != null)
             {
+                if (entity.Login != request.Login)
+                {
+                    var user = await _userRepository.GetByUserNameAsync(request.Login);
+                    if (user != null)
+                    {
+                        return new BaseResponse<User> { Status = "Error", Message = "Пользователь с таким логином уже существует" };
+                    }
+                }
                 if (request.Password != null) 
                 { 
                     entity.FullName = request.FullName;

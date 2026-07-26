@@ -3,11 +3,13 @@ using GSM.Application.Queries.ProductQueries;
 using GSM.Application.Queries.WagonReceiptQueries;
 using GSM.Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GSM.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WagonReceiptsController : ControllerBase

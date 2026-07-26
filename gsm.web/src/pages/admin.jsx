@@ -27,7 +27,8 @@ export default function AdminPage() {
 
     const [usersLoading, setUsersLoading] = useState(true);
     const [productsLoading, setProductsLoading] = useState(true);
-
+    const isSuccess = (result) =>
+        (result.Status ?? result.status) === "Success";
     // Пользователи
 
     const [dialogOpen, setDialogOpen] = useState(false);
@@ -130,7 +131,7 @@ export default function AdminPage() {
 
             password: "",
 
-            roleName: "Оператор"
+            roleName: "Operator"
 
         });
 
@@ -178,9 +179,7 @@ export default function AdminPage() {
 
     };
     const saveUser = async () => {
-
         try {
-
             const result =
                 mode === "add"
                     ? await usersApi.create(editedUser)
@@ -188,46 +187,28 @@ export default function AdminPage() {
 
             showSnackbar(result);
 
-            if (result.Status || result.status) {
-
+            if (isSuccess(result)) {
                 setDialogOpen(false);
-
                 await loadUsers();
-
             }
-
-        }
-        catch (error) {
-
+        } catch (error) {
             console.error(error);
-
         }
-
     };
     const handleDeleteUser = async (row) => {
-
-        if (!window.confirm(`Удалить ${row.fullName}?`))
-            return;
+        if (!window.confirm(`Удалить ${row.fullName}?`)) return;
 
         try {
-
             const result = await usersApi.remove(row.userId);
 
             showSnackbar(result);
 
-            if (result.Status || result.status) {
-
+            if (isSuccess(result)) {
                 await loadUsers();
-
             }
-
-        }
-        catch (error) {
-
+        } catch (error) {
             console.error(error);
-
         }
-
     };
     const handleAddProduct = () => {
 
@@ -289,9 +270,7 @@ export default function AdminPage() {
 
     };
     const saveProduct = async () => {
-
         try {
-
             const result =
                 productMode === "add"
                     ? await productsApi.create(editedProduct)
@@ -299,21 +278,13 @@ export default function AdminPage() {
 
             showSnackbar(result);
 
-            if (result.Status || result.status) {
-
+            if (isSuccess(result)) {
                 setProductDialogOpen(false);
-
                 await loadProducts();
-
             }
-
-        }
-        catch (error) {
-
+        } catch (error) {
             console.error(error);
-
         }
-
     };
     const handleDeleteProduct = async (row) => {
 

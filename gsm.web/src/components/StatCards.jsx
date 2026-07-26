@@ -8,7 +8,6 @@ import {
 import {
     TrendingUp,
     TrendingDown,
-    WaterDrop,
     LocalGasStation
 } from "@mui/icons-material";
 
@@ -24,11 +23,6 @@ const cards = [
         icon: TrendingDown
     },
     {
-        key: "totalLoss",
-        title: "Потери",
-        icon: WaterDrop
-    },
-    {
         key: "currentVolume",
         title: "Остаток",
         icon: LocalGasStation
@@ -42,7 +36,15 @@ export default function StatCards({ data }) {
                 const Icon = card.icon;
 
                 return (
-                    <Grid size={{ xs: 12, sm: 6, lg: 3 }} key={card.key}>
+                    <Grid
+                        size={{
+                            xs: 12,
+                            sm: 6,
+                            md: 4,
+                            lg: 4
+                        }}
+                        key={card.key}
+                    >
                         <Paper sx={{ p: 3, borderRadius: 3 }}>
                             <Stack
                                 direction="row"

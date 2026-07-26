@@ -18,7 +18,7 @@ namespace GSM.Application.Handlers.TankMeasurmentHandlers
 
         public async Task<List<TankMeasurement>> Handle(GetAllTankMeasurmentsQuerie request, CancellationToken cancellationToken)
         {
-            return await _unitOfWork.TankMeasurementRepository.GetAllAsync();
+            return await _unitOfWork.TankMeasurementRepository.GetAllAsync(x => x.TankId == request.TankId, x=>x.User);
         }
     }
 }

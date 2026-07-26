@@ -17,7 +17,8 @@ export default function EntityDialog({
     children,
     mode,
     onClose,
-    onSave
+    onSave,
+    dialogProps = {}
 }) {
 
     const isView = mode === "view";
@@ -28,6 +29,7 @@ export default function EntityDialog({
             open={open}
             onClose={onClose}
             maxWidth="sm"
+            {...dialogProps}
             fullWidth
             PaperProps={{
                 sx: {

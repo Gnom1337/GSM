@@ -1,138 +1,585 @@
-import * as React from 'react';
-import { EventCalendar } from '@mui/x-scheduler/event-calendar';
-import Box from "@mui/material/Box";
-import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
-import Typography from "@mui/material/Typography";
-import { Stack } from "@mui/material";
-import { createDateLocaleTheme } from '@mui/x-scheduler/locales'; 
-import { ru } from 'date-fns/locale';
-import { deepPurple } from '@mui/material/colors'
-import { customRuRU } from '../components/schedulerRu';
+import { useEffect, useState } from "react";
+
 import {
+    Box,
+    Stack,
+    Typography
+} from "@mui/material";
 
-    createTheme,
-    ThemeProvider,
-} from '@mui/material/styles';
+import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
 
-const customRuLocale = {
-    ...ru,
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import interactionPlugin from "@fullcalendar/interaction";
 
-    localize: {
-        ...ru.localize,
+import ruLocale from "@fullcalendar/core/locales/ru";
 
-        month: (n) => {
-            const months = [
-                'Январь',
-                'Февраль',
-                'Март',
-                'Апрель',
-                'Май',
-                'Июнь',
-                'Июль',
-                'Август',
-                'Сентябрь',
-                'Октябрь',
-                'Ноябрь',
-                'Декабрь',
-            ];
+import format from "date-fns/format";
 
-            return months[n];
-        },
-    },
-};
+import dispatchApi from "../services/dispatchApi";
+import tanksApi from "../services/tanksApi";
+
+import EntityDialog from "../components/EntityDialog";
+import DispatchForm from "../components/DispatchForm";
+
+import AppSnackbar from "../components/AppSnackbar";
+import useSnackbar from "../hooks/useSnackbar";
 
 
-const theme = createTheme({
-    palette: {
-        primary: deepPurple,
-        secondary: deepPurple,
-    }, 
-    },
-
-    customRuRU,
-
-    createDateLocaleTheme(customRuLocale)
-);
+export default function ShipmentPage() {
 
 
+    const {
+        snackbar,
+        showSnackbar,
+        closeSnackbar
+    } = useSnackbar();
+
+
+    const [events,setEvents] = useState([]);
+
+    const [tanks,setTanks] = useState([]);
+
+    const [dialog,setDialog] = useState({
+        open:false,
+        mode:null,
+        value:null
+    });
+
+    const [form,setForm] = useState(null);
 
 
 
-const initialEvents = [
-    {
-        id: 1,
-        title: 'Team Meeting',
-        start: '2024-01-15T10:00:00',
-        end: '2024-01-15T11:00:00',
-    },
-    {
-        id: 2,
-        title: 'Project Review',
-        start: '2024-01-16T14:00:00',
-        end: '2024-01-16T15:30:00',
-    },
-    {
-        id: 3,
-        title: 'Client Call',
-        start: '2024-01-17T09:00:00',
-        end: '2024-01-17T10:00:00',
-    },
-];
+    const loadData = async()=>{
 
-export default function RenderEventCalendar() {
-    const [events, setEvents] = React.useState(initialEvents);
+        try{
+
+            const dispatches = await dispatchApi.getAll();
+
+            const tankList = await tanksApi.getAll();
+
+
+            setTanks(tankList);
+
+
+            setEvents(
+                dispatches.map(item=>({
+
+                    id:item.dispatchId,
+
+                    title:
+                        `${item.recipientOrg} (${item.volumeInvoiceLiters} л)`,
+
+                    start:
+                        item.dispatchDate,
+
+                    allDay:true,
+
+                    extendedProps:{
+                        data:item
+                    }
+
+                }))
+            );
+
+
+        }
+        catch(e){
+
+            console.error(e);
+
+        }
+
+    };
+
+
+
+    useEffect(()=>{
+
+        loadData();
+
+    },[]);
+
+
+
+
+
+    const closeDialog=()=>{
+
+        setDialog({
+            open:false,
+            mode:null,
+            value:null
+        });
+
+        setForm(null);
+
+    };
+
+
+
+
+
+    const addDispatch=(date)=>{
+
+
+        const model={
+
+            dispatchDate:
+                format(date,"yyyy-MM-dd"),
+
+            tankId:"",
+            truckNumber:"",
+            driverName:"",
+            recipientOrg:"",
+            volumeInvoiceLiters:"",
+            waybillNumber:""
+
+        };
+
+
+        setForm(model);
+
+
+        setDialog({
+
+            open:true,
+
+            mode:"add",
+
+            value:model
+
+        });
+
+    };
+
+
+
+
+
+    const viewDispatch=(info)=>{
+
+
+        const item =
+            info.event.extendedProps.data;
+
+
+        setForm(item);
+
+
+        setDialog({
+
+            open:true,
+
+            mode:"view",
+
+            value:item
+
+        });
+
+    };
+
+
+
+
+
+    const editDispatch=(info)=>{
+
+
+        const item =
+            info.event.extendedProps.data;
+
+
+        setForm(item);
+
+
+        setDialog({
+
+            open:true,
+
+            mode:"edit",
+
+            value:item
+
+        });
+
+    };
+
+
+
+
+
+    const eventContent=(arg)=>{
+
+
+        return (
+
+            <Box
+                sx={{
+                    background:
+                        "linear-gradient(135deg,#673ab7,#7E57C2)",
+
+                    borderRadius:2,
+
+                    color:"#fff",
+
+                    px:1,
+
+                    py:.5,
+
+                    fontWeight:600,
+
+                    fontSize:13,
+
+                    overflow:"hidden"
+                }}
+            >
+
+                {arg.event.title}
+
+            </Box>
+
+        );
+
+    };
+
+
+
+
+
+    const saveDispatch=async()=>{
+
+        const tank=tanks.find(
+            x=>x.tankId===Number(form.tankId)
+        );
+
+
+        if(!tank){
+
+            showSnackbar({
+                Status:"Error",
+                Message:"Выберите резервуар."
+            });
+
+            return;
+
+        }
+
+
+        const volume=
+            Number(form.volumeInvoiceLiters);
+
+
+
+        if(volume<=0){
+
+            showSnackbar({
+                Status:"Error",
+                Message:"Введите корректный объем."
+            });
+
+            return;
+
+        }
+
+
+
+        try{
+
+
+            const result =
+                dialog.mode==="add"
+
+                ? await dispatchApi.create(form)
+
+                : await dispatchApi.update(form);
+
+
+
+            showSnackbar(
+                result.data ?? result
+            );
+
+
+            closeDialog();
+
+            await loadData();
+
+
+        }
+        catch(e){
+
+            showSnackbar({
+
+                Status:"Error",
+
+                Message:"Ошибка сохранения."
+
+            });
+
+        }
+
+
+    };
+
+
+
+
 
     return (
-        <ThemeProvider theme={theme}>
-        <Box
-            sx={{
-                width: "100%",
-                overflowX: "auto",
-            }}
-        >
-                <Box
-                    sx={{
-                        display: "flex",
-                        flexDirection: {
-                            xs: "column",
-                            sm: "row",
-                        },
-                        gap: 2,
-                        justifyContent: "space-between",
-                        alignItems: {
-                            xs: "stretch",
-                            sm: "center",
-                        },
-                        mb: 2,
-                    }}
-                >
-                    <Stack direction="row" spacing={1.5} alignItems="center">
-                    <ScheduleSendIcon 
-                                color="secondary"
-                                sx={{ fontSize: 28 }}
-                            />
-                        <Typography variant="h5" fontWeight={600}>
-                            Отпуск в автоцистерны
-                        </Typography>
-                    </Stack>
-                </Box>
 
-        <EventCalendar
+        <>
+
+
+        <Stack
+            direction="row"
+            spacing={1.5}
+            alignItems="center"
+            mb={3}
+        >
+
+            <ScheduleSendIcon
+                color="secondary"
                 sx={{
-                    height: "82vh",
-                    minWidth: 300, 
-                   
+                    fontSize:30
                 }}
-                views={['month']}
-                defaultView="month" 
-                events={events}
-                onEventsChange={setEvents}
-                    defaultVisibleDate={new Date()}
-                    defaultPreferences={{
-                        isSidePanelOpen: false,
-                    }}
             />
-            </Box>
-        </ThemeProvider>
+
+            <Typography
+                variant="h5"
+                fontWeight={700}
+            >
+                Отпуск в автоцистерны
+            </Typography>
+
+
+        </Stack>
+
+
+
+
+
+        <Box
+
+                sx={{
+
+                    p: 2,
+
+                    borderRadius: 4,
+
+                    boxShadow:
+                        "0 10px 35px rgba(0,0,0,.08)",
+
+
+
+                    "& .fc": {
+
+
+                        "--fc-border-color":
+                            "rgba(0,0,0,.08)"
+
+                    },
+
+
+                    "& .fc-toolbar": {
+
+                        mb: 3,
+
+                    },
+
+
+                    "& .fc-toolbar-title": {
+
+                        fontSize: 22,
+
+                        fontWeight: 700
+
+                    },
+
+
+
+                    "& .fc-button": {
+
+
+                        background: "#673ab7!important",
+
+                        border: "0!important",
+
+                        borderRadius: "10px!important",
+
+                        fontWeight: 600
+
+
+                    },
+
+
+                    "& .fc-button:hover": {
+
+
+                        opacity: .85
+
+                    },
+
+
+
+
+
+
+                    "& .fc-day-today": {
+
+                        background:
+                            "#F3E5F5!important"
+
+                    },
+
+
+
+                    "& .fc-event": {
+
+                        border: 0,
+
+                        background: "transparent"
+
+                    },
+
+
+
+
+                }}
+
+        >
+
+
+
+        <FullCalendar
+
+            plugins={[
+                dayGridPlugin,
+                interactionPlugin
+            ]}
+
+
+            locale={ruLocale}
+
+
+            initialView="dayGridMonth"
+
+
+            height="80vh"
+
+
+            events={events}
+
+
+            editable={false}
+
+
+            selectable={true}
+
+
+            dayMaxEvents={3}
+
+
+            eventContent={eventContent}
+
+
+
+            dateClick={(info)=>{
+
+                addDispatch(info.date)
+
+            }}
+
+
+
+            eventClick={(info)=>{
+
+                viewDispatch(info)
+
+            }}
+
+
+
+            eventDoubleClick={(info)=>{
+
+                editDispatch(info)
+
+            }}
+
+
+        />
+
+
+        </Box>
+
+
+
+
+
+        <EntityDialog
+
+            open={dialog.open}
+
+            mode={dialog.mode}
+
+            title={
+                dialog.mode==="add"
+
+                ? "Добавить отпуск"
+
+                :
+
+                dialog.mode==="edit"
+
+                ? "Редактирование отпуска"
+
+                :
+
+                "Просмотр отпуска"
+
+            }
+
+            onClose={closeDialog}
+
+            onSave={saveDispatch}
+
+        >
+
+            <DispatchForm
+
+                value={form}
+
+                mode={dialog.mode}
+
+                tanks={tanks}
+
+                onChange={setForm}
+
+            />
+
+
+        </EntityDialog>
+
+
+
+
+
+        <AppSnackbar
+
+            open={snackbar.open}
+
+            severity={snackbar.severity}
+
+            message={snackbar.message}
+
+            onClose={closeSnackbar}
+
+        />
+
+
+
+        </>
+
     );
+
 }

@@ -13,23 +13,14 @@ export default function useSnackbar() {
     });
 
     const showSnackbar = (result) => {
+        const status = result.Status ?? result.status;
+        const message = result.Message ?? result.message;
 
         setSnackbar({
-
             open: true,
-
-            severity:
-                result.Status || result.status
-                    ? "success"
-                    : "error",
-
-            message:
-                result.Message ??
-                result.message ??
-                "Операция выполнена"
-
+            severity: status === "Success" ? "success" : "error",
+            message,
         });
-
     };
 
     const closeSnackbar = () => {

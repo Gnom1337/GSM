@@ -19,7 +19,15 @@ import {
 } from "recharts";
 
 export default function FuelMovementChart({ data }) {
+    const formatDate = (dateStr) => {
+        if (!dateStr) return "";
+        const date = new Date(dateStr);
+        // Вернет дату в локальном формате, например: 26.07.2026
+        return date.toLocaleDateString("ru-RU");
 
+        // Альтернатива, если на бэкенде дата уже в формате YYYY-MM-DD:
+        // return dateStr.split('T')[0];
+    };
     return (
 
         <Paper
@@ -47,11 +55,14 @@ export default function FuelMovementChart({ data }) {
 
                     <CartesianGrid strokeDasharray="3 3" />
 
-                    <XAxis dataKey="date" />
+                    <XAxis dataKey="date" tickFormatter={formatDate} />
 
                     <YAxis />
 
-                    <Tooltip />
+                    <Tooltip
+                        labelFormatter={formatDate}
+                        formatter={(value, name) => [value, name]}
+                    />
 
                     <Legend />
 
@@ -61,6 +72,7 @@ export default function FuelMovementChart({ data }) {
                         name="Поступление"
                         stroke="#4caf50"
                         strokeWidth={3}
+                        
                     />
 
                     <Line
@@ -69,6 +81,7 @@ export default function FuelMovementChart({ data }) {
                         name="Отгрузка"
                         stroke="#f44336"
                         strokeWidth={3}
+                        
                     />
 
                 </LineChart>

@@ -2,10 +2,12 @@
 using GSM.Application.Queries.DailyBalanceQueries;
 using GSM.Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GSM.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DailyBalancesController : ControllerBase

@@ -12,16 +12,46 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import { Navigate } from "react-router-dom";
 
+import { login, me } from "../services/authService";
 import {
     Visibility,
     VisibilityOff,
     LocalGasStation,
 } from "@mui/icons-material";
 import { alpha } from "@mui/material/styles";
+import { useContext } from "react";
+import AuthContext from "../context/authContext";
 export default function LoginPage() {
-    const [showPassword, setShowPassword] = useState(false);
+    const { isAuthenticated, loading } = useContext(AuthContext);
 
+    
+    const [showPassword, setShowPassword] = useState(false);
+    const [userName, setUserName] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const { setUser, setIsAuthenticated } = useContext(AuthContext);
+    const handleLogin = async () => {
+        setError("");
+
+        try {
+            await login(userName, password);
+            const response = await me();
+
+            setUser(response.data);
+            setIsAuthenticated(true);
+        } catch {
+            setError("Неверный логин или пароль");
+        }
+    };
+    if (loading) {
+        return null;
+    }
+
+    if (isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
     return (
         <Box
             sx={(theme) => ({
@@ -124,27 +154,23 @@ ${theme.palette.primary.light}
                             <TextField
                                 fullWidth
                                 label="Логин"
-                                placeholder="Введите логин"
+                                value={userName}
+                                onChange={(e) => setUserName(e.target.value)}
                             />
 
                             <TextField
                                 fullWidth
                                 label="Пароль"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 type={showPassword ? "text" : "password"}
-                                placeholder="Введите пароль"
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton
-                                                onClick={() =>
-                                                    setShowPassword(!showPassword)
-                                                }
+                                                onClick={() => setShowPassword(!showPassword)}
                                             >
-                                                {showPassword ? (
-                                                    <VisibilityOff />
-                                                ) : (
-                                                    <Visibility />
-                                                )}
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
                                             </IconButton>
                                         </InputAdornment>
                                     ),
@@ -155,18 +181,22 @@ ${theme.palette.primary.light}
                                 control={<Checkbox />}
                                 label="Запомнить меня"
                             />
-
+                            {error && (
+                                <Typography color="error">
+                                    {error}
+                                </Typography>
+                            )}
                             <Button
                                 variant="contained"
-                                
                                 size="large"
+                                onClick={handleLogin}
                                 sx={{
                                     height: 54,
                                     borderRadius: 3,
                                     fontSize: 16,
                                     textTransform: "none",
                                     fontWeight: 700,
-                                    bgcolor: "secondary.main"
+                                    bgcolor: "secondary.main",
                                 }}
                             >
                                 Войти

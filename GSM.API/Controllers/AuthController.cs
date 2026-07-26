@@ -1,7 +1,10 @@
 ﻿using GSM.Application.Queries.UserQuerie;
 using GSM.Application.Services;
+using GSM.Domain.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using System.Text.Json;
 
 namespace GSM.API.Controllers
@@ -10,8 +13,8 @@ namespace GSM.API.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly AuthService _service;
-        public AuthController(AuthService service)
+        private readonly IAuthService _service;
+        public AuthController(IAuthService service)
         {
             _service = service;
         }
@@ -31,7 +34,29 @@ namespace GSM.API.Controllers
                 Secure = true,
                 SameSite = SameSiteMode.None,
             });
-            return Ok(JsonSerializer.Serialize("Авторизация прошла успешно"));
+            return Ok(new
+            {
+                message = "Авторизация прошла успешно"
+            });
+        }
+        [Authorize]
+        [HttpPost("Logout")]
+        public IActionResult Logout()
+        {
+            Response.Cookies.Delete("GSM-cookies");
+
+            return Ok();
+        }
+        [Authorize]
+        [HttpGet("Me")]
+        public IActionResult Me()
+        {
+            return Ok(new
+            {
+                Id = User.FindFirstValue(ClaimTypes.NameIdentifier),
+                FullName = User.FindFirstValue(ClaimTypes.Name),
+                Role = User.FindFirstValue(ClaimTypes.Role)
+            });
         }
     }
 }

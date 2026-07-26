@@ -3,11 +3,13 @@ using GSM.Application.Queries.DailyBalanceQueries;
 using GSM.Application.Queries.TankMeasurmentQueries;
 using GSM.Domain.Models;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GSM.API.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class TankMeasurmentsController : ControllerBase
@@ -17,15 +19,20 @@ namespace GSM.API.Controllers
         {
             _mediator = mediator;
         }
-        [HttpPost("Create")]
-        public async Task<IActionResult> CreateTankMeasurmentAsync(AddTankMeasurmentQuerie request, CancellationToken token)
+        [HttpPost("Create/{TankId}")]
+        public async Task<IActionResult> CreateTankMeasurmentAsync(int TankId, AddTankMeasurmentQuerie request, CancellationToken token)
         {
+            request.TankId = TankId;
             return Ok(await _mediator.Send(request, token));
         }
-        [HttpGet("GetAll")]
-        public async Task<ActionResult<List<TankMeasurement>>> GetAllTankMeasurmentsAsync()
+        [HttpGet("GetAll/{TankId}")]
+        public async Task<ActionResult<List<TankMeasurement>>> GetAllTankMeasurmentsAsync(int TankId)
         {
-            return Ok(await _mediator.Send(new GetAllDailyBalancesQuerie()));
+            
+            return Ok(await _mediator.Send(new GetAllTankMeasurmentsQuerie
+            {
+                TankId = TankId
+            }));
         }
         [HttpDelete("Delete/{Id}")]
         public async Task<IActionResult> DeleteTankMeasurmentAsync(int Id, CancellationToken token)

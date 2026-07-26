@@ -9,7 +9,7 @@ import AppDataGrid from "../components/DataGrid";
 import Tank from "@mui/icons-material/OilBarrel";
 
 import EntityDialog from "../components/EntityDialog";
-
+import TankJournalDialog from "../components/TankJournalDialog";
 import TankForm from "../components/TankForm";
 import AppSnackbar from "../components/AppSnackbar";
 import useSnackbar from "../hooks/useSnackbar";
@@ -25,7 +25,9 @@ export default function TanksPage() {
     const [rows, setRows] = useState([]);
 
     const [loading, setLoading] = useState(true);
+    const [journalOpen, setJournalOpen] = useState(false);
 
+    const [selectedTank, setSelectedTank] = useState(null);
 
     const [dialog, setDialog] = useState({
 
@@ -402,13 +404,13 @@ export default function TanksPage() {
                 onView={viewTank}
 
 
-                onJournal={
-                    row =>
-                        console.log(
-                            "Журнал",
-                            row
-                        )
-                }
+                onJournal={(row) => {
+
+                    setSelectedTank(row);
+
+                    setJournalOpen(true);
+
+                }}
 
             />
 
@@ -443,7 +445,18 @@ export default function TanksPage() {
 
 
             </EntityDialog>
+            <TankJournalDialog
+                open={journalOpen}
+                tank={selectedTank}
+                onClose={() => {
 
+                    setJournalOpen(false);
+
+                    setSelectedTank(null);
+
+                }}
+                onChanged={loadData}
+            />
             <AppSnackbar
 
                 open={snackbar.open}
