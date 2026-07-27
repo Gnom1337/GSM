@@ -154,7 +154,7 @@ export default function WagonReceiptForm({
     const predictedFreeVolume =
         Math.max(
             capacity - predictedVolume,
-            0
+            
         );
 
 
@@ -198,7 +198,7 @@ export default function WagonReceiptForm({
 
             sx={{
 
-                p: 2,
+                p: 1,
 
                 borderRadius: 3,
 
@@ -804,7 +804,7 @@ export default function WagonReceiptForm({
                                                             }
 
                                                             color={
-                                                                percent < 55
+                                                                percent < 55 || remain < 0
                                                                     ? "error"
                                                                     :
                                                                     percent < 80
@@ -831,7 +831,7 @@ export default function WagonReceiptForm({
                                                             value={percent}
 
                                                             color={
-                                                                percent < 55
+                                                                percent < 55 || remain < 0
                                                                     ? "error"
                                                                     :
                                                                     percent < 80
