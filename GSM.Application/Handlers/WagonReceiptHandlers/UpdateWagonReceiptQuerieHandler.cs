@@ -22,22 +22,37 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
             var wagonReceipt = await _unitOfWork.WagonReceiptRepository.GetById(request.WagonReceiptId);
             var product = await _unitOfWork.ProductRepository.GetById(request.ProductId);
             var tank = await _unitOfWork.TankRepository.GetById(request.TankId);
+            if (wagonReceipt.TankId != request.TankId)
+            {
+                var oldTank = await _unitOfWork.TankRepository
+                    .GetById(wagonReceipt.TankId);
 
+                var newTank = await _unitOfWork.TankRepository
+                    .GetById(request.TankId);
 
-            //USER..........................
+                oldTank.CurentVolumeLiters -= wagonReceipt.VolumeActualLiters;
 
+                newTank.CurentVolumeLiters += request.VolumeActualLiters;
+                await _unitOfWork.TankRepository.UpdateAsync(oldTank);
+                await _unitOfWork.TankRepository.UpdateAsync(newTank);
+            }
+            else
+            {
+                tank.CurentVolumeLiters -= wagonReceipt.VolumeActualLiters;
 
+                tank.CurentVolumeLiters += request.VolumeActualLiters;
+                await _unitOfWork.TankRepository.UpdateAsync(tank);
+            }
+            
             if (wagonReceipt != null)
             {
                 wagonReceipt.Tank= tank;
                 wagonReceipt.Product= product;
                 wagonReceipt.WagonNumber= request.WagonNumber;
                 wagonReceipt.WaybillNumber= request.WaybillNumber;
-                wagonReceipt.CreatedAt= request.CreatedAt;
                 wagonReceipt.VolumeActualLiters= request.VolumeActualLiters;
                 wagonReceipt.ReceiptDate= request.ReceiptDate;
                 wagonReceipt.VolumeInvoiceLiters= request.VolumeInvoiceLiters;
-                wagonReceipt.User = request.User;
                 wagonReceipt.DiscrepancyLiters = request.VolumeInvoiceLiters = request.VolumeActualLiters;
                 var result = await _unitOfWork.WagonReceiptRepository.UpdateAsync(wagonReceipt);
                 await _unitOfWork.SaveChangesAsync();

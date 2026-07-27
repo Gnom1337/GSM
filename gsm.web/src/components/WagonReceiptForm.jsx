@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/static-components */
 import {
     Grid,
     Stack,
@@ -16,17 +17,31 @@ import {
 import OilBarrelIcon from "@mui/icons-material/OilBarrel";
 import TrainIcon from "@mui/icons-material/Train";
 
-export default function WagonReceiptForm({
 
+export default function WagonReceiptForm({
     value,
     mode,
     onChange,
     products,
     tanks
-
 }) {
 
+
     const disabled = mode === "view";
+
+
+    const formatNumber = (num) => {
+
+        const value = Number(num);
+
+        if (isNaN(value)) {
+            return "0";
+        }
+
+        return value.toLocaleString("ru-RU");
+
+    };
+
 
     const update = (field, val) => {
 
@@ -37,320 +52,585 @@ export default function WagonReceiptForm({
             [field]: val,
 
             ...(field === "productId"
-                ? { tankId: "" }
+                ? {
+                    tankId: ""
+                }
                 : {})
 
         };
 
-        const invoice = Number(
 
-            field === "volumeInvoiceLiters"
-                ? val
-                : model.volumeInvoiceLiters
+        const invoice =
+            Number(model.volumeInvoiceLiters || 0);
 
-        );
 
-        const actual = Number(
+        const actual =
+            Number(model.volumeActualLiters || 0);
 
-            field === "volumeActualLiters"
-                ? val
-                : model.volumeActualLiters
 
-        );
 
         model.discrepancyLiters =
             invoice - actual;
+
+
 
         onChange(model);
 
     };
 
+
+
     const filteredTanks =
         value?.productId
-
             ? tanks.filter(
-
                 x =>
                     x.productId ===
                     Number(value.productId)
-
             )
-
             : [];
 
-    const selectedTank = tanks.find(
 
-        x =>
-            x.tankId ===
-            Number(value?.tankId)
 
-    );
+    const selectedTank =
+        tanks.find(
+            x =>
+                x.tankId ===
+                Number(value?.tankId)
+        );
 
     const currentVolume =
         Number(
             selectedTank?.curentVolumeLiters ?? 0
         );
 
+
+    const displayedCurrentVolume =
+        currentVolume;
+
+
     const capacity =
         Number(
             selectedTank?.capacityLiters ?? 0
         );
 
-    const freeVolume =
-        capacity - currentVolume;
 
-    const actualVolume =
+
+    const newVolume =
         Number(
             value?.volumeActualLiters ?? 0
         );
 
+
+
+    // объём операции, который уже был учтён
+    const oldVolume =
+        mode === "edit" || mode === "view"
+            ? Number(
+                value?.oldVolumeActualLiters ??
+                value?.volumeActualLiters ??
+                0
+            )
+            : 0;
+
+
+
+    // прогнозируемый объём после сохранения
+    const predictedVolume =
+        mode === "edit" || mode === "view"
+
+            ?
+
+            currentVolume
+            - oldVolume
+            + newVolume
+
+            :
+
+            currentVolume
+            + newVolume;
+
+
+
+    const predictedFreeVolume =
+        Math.max(
+            capacity - predictedVolume,
+            0
+        );
+
+
+
     const remain =
-        freeVolume - actualVolume;
+        predictedFreeVolume;
+
+
 
     const percent =
         capacity === 0
+
             ? 0
-            : currentVolume / capacity * 100;
+
+            :
+
+            Math.min(
+                100,
+                Math.max(
+                    0,
+                    predictedVolume /
+                    capacity *
+                    100
+                )
+            );
+
+
+
+   
+
+
+
+
+    const ViewField = ({
+        label,
+        value,
+        color
+    }) => (
+
+        <Box
+
+            sx={{
+
+                p: 2,
+
+                borderRadius: 3,
+
+                background:
+                    "#fafafa",
+
+                border:
+                    "1px solid #eeeeee"
+
+            }}
+
+        >
+
+            <Typography
+
+                variant="caption"
+
+                color="text.secondary"
+
+            >
+
+                {label}
+
+            </Typography>
+
+
+            <Typography
+
+                variant="h6"
+
+                fontWeight={700}
+
+                color={color}
+
+            >
+
+                {value || "-"}
+
+            </Typography>
+
+
+        </Box>
+
+    );
+
+
+
 
     return (
 
         <Box>
 
+
             <Grid
+
                 container
+
                 spacing={3}
+
             >
 
+
+
+                {/* ВАГОН */}
+
+
                 <Grid
+
                     size={{
                         xs: 12,
                         md: 6
                     }}
+
                 >
 
                     <Card
+
                         variant="outlined"
+
                         sx={{
-                            borderRadius: 4,
-                            height: "100%"
+
+                            borderRadius: 4
+
                         }}
+
                     >
 
                         <CardContent>
 
+
                             <Stack spacing={2}>
 
+
                                 <Stack
+
                                     direction="row"
+
                                     spacing={1}
+
                                     alignItems="center"
+
                                 >
 
                                     <TrainIcon color="primary" />
 
+
                                     <Typography
+
                                         variant="h6"
+
                                         fontWeight={700}
+
                                     >
 
                                         Данные вагона
 
                                     </Typography>
 
+
                                 </Stack>
+
 
                                 <Divider />
 
-                                <TextField
 
-                                    label="Номер вагона"
 
-                                    value={value?.wagonNumber ?? ""}
 
-                                    onChange={(e) =>
+                                {
+                                    disabled ?
 
-                                        update(
 
-                                            "wagonNumber",
+                                        <>
 
-                                            e.target.value
+                                            <ViewField
 
-                                        )
+                                                label="Номер вагона"
 
-                                    }
+                                                value={
+                                                    value?.wagonNumber
+                                                }
 
-                                    disabled={disabled}
+                                            />
 
-                                    fullWidth
 
-                                />
+                                            <ViewField
 
-                                <TextField
+                                                label="Дата прихода"
 
-                                    type="date"
+                                                value={
+                                                    value?.receiptDate
+                                                }
 
-                                    label="Дата прихода"
+                                            />
 
-                                    InputLabelProps={{
-                                        shrink: true
-                                    }}
 
-                                    value={value?.receiptDate ?? ""}
+                                            <ViewField
 
-                                    onChange={(e) =>
+                                                label="Номер накладной"
 
-                                        update(
+                                                value={
+                                                    value?.waybillNumber
+                                                }
 
-                                            "receiptDate",
+                                            />
 
-                                            e.target.value
 
-                                        )
+                                            <ViewField
 
-                                    }
+                                                label="Объем по накладной"
 
-                                    disabled={disabled}
+                                                value={
+                                                    `${formatNumber(
+                                                        value?.volumeInvoiceLiters
+                                                    )} л`
+                                                }
 
-                                    fullWidth
+                                            />
 
-                                />
 
-                                <TextField
+                                            <ViewField
 
-                                    label="Номер накладной"
+                                                label="Фактический объем"
 
-                                    value={value?.waybillNumber ?? ""}
+                                                value={
+                                                    `${formatNumber(
+                                                        value?.volumeActualLiters
+                                                    )} л`
+                                                }
 
-                                    onChange={(e) =>
+                                                color="primary"
 
-                                        update(
+                                            />
 
-                                            "waybillNumber",
 
-                                            e.target.value
+                                            <ViewField
 
-                                        )
+                                                label="Расхождение"
 
-                                    }
+                                                value={
+                                                    `${formatNumber(
+                                                        value?.discrepancyLiters
+                                                    )} л`
+                                                }
 
-                                    disabled={disabled}
+                                                color={
+                                                    Number(
+                                                        value?.discrepancyLiters
+                                                    ) === 0
 
-                                    fullWidth
+                                                        ?
 
-                                />
+                                                        "success.main"
 
-                                <TextField
+                                                        :
 
-                                    label="Объем по накладной"
+                                                        "warning.main"
+                                                }
 
-                                    type="number"
+                                            />
 
-                                    value={value?.volumeInvoiceLiters ?? ""}
+                                        </>
 
-                                    onChange={(e) =>
 
-                                        update(
+                                        :
 
-                                            "volumeInvoiceLiters",
 
-                                            e.target.value
+                                        <>
 
-                                        )
 
-                                    }
+                                            <TextField
 
-                                    disabled={disabled}
+                                                label="Номер вагона"
 
-                                    fullWidth
+                                                value={
+                                                    value?.wagonNumber ?? ""
+                                                }
 
-                                />
+                                                onChange={
+                                                    e =>
+                                                        update(
+                                                            "wagonNumber",
+                                                            e.target.value
+                                                        )
+                                                }
 
-                                <TextField
+                                                fullWidth
 
-                                    label="Фактический объем"
+                                            />
 
-                                    type="number"
 
-                                    value={value?.volumeActualLiters ?? ""}
 
-                                    onChange={(e) =>
+                                            <TextField
 
-                                        update(
+                                                type="date"
 
-                                            "volumeActualLiters",
+                                                label="Дата прихода"
 
-                                            e.target.value
+                                                InputLabelProps={{
+                                                    shrink: true
+                                                }}
 
-                                        )
+                                                value={
+                                                    value?.receiptDate ?? ""
+                                                }
 
-                                    }
+                                                onChange={
+                                                    e =>
+                                                        update(
+                                                            "receiptDate",
+                                                            e.target.value
+                                                        )
+                                                }
 
-                                    disabled={disabled}
+                                                fullWidth
 
-                                    fullWidth
+                                            />
 
-                                />
 
-                                <TextField
 
-                                    label="Расхождение"
+                                            <TextField
 
-                                    value={value?.discrepancyLiters ?? 0}
+                                                label="Номер накладной"
 
-                                    InputProps={{
-                                        readOnly: true
-                                    }}
+                                                value={
+                                                    value?.waybillNumber ?? ""
+                                                }
 
-                                    fullWidth
+                                                onChange={
+                                                    e =>
+                                                        update(
+                                                            "waybillNumber",
+                                                            e.target.value
+                                                        )
+                                                }
 
-                                />
+                                                fullWidth
+
+                                            />
+
+
+
+                                            <TextField
+
+                                                label="Объем по накладной"
+
+                                                type="number"
+
+                                                value={
+                                                    value?.volumeInvoiceLiters ?? ""
+                                                }
+
+                                                onChange={
+                                                    e =>
+                                                        update(
+                                                            "volumeInvoiceLiters",
+                                                            e.target.value
+                                                        )
+                                                }
+
+                                                fullWidth
+
+                                            />
+
+
+
+                                            <TextField
+
+                                                label="Фактический объем"
+
+                                                type="number"
+
+                                                value={
+                                                    value?.volumeActualLiters ?? ""
+                                                }
+
+                                                onChange={
+                                                    e =>
+                                                        update(
+                                                            "volumeActualLiters",
+                                                            e.target.value
+                                                        )
+                                                }
+
+                                                fullWidth
+
+                                            />
+
+
+                                        </>
+
+                                }
+
+
 
                             </Stack>
 
+
                         </CardContent>
+
 
                     </Card>
 
+
                 </Grid>
 
+
+
+
+
+                {/* РЕЗЕРВУАР */}
+
+
                 <Grid
+
                     size={{
                         xs: 12,
                         md: 6
                     }}
+
                 >
 
                     <Card
+
                         variant="outlined"
+
                         sx={{
+
                             borderRadius: 4
+
                         }}
+
                     >
 
                         <CardContent>
 
+
                             <Stack spacing={2}>
 
+
                                 <Stack
+
                                     direction="row"
+
                                     spacing={1}
+
                                     alignItems="center"
+
                                 >
 
                                     <OilBarrelIcon color="secondary" />
 
+
                                     <Typography
+
                                         variant="h6"
+
                                         fontWeight={700}
+
                                     >
 
                                         Слив в резервуар
 
                                     </Typography>
 
+
                                 </Stack>
 
+
                                 <Divider />
+
+
+
 
                                 <TextField
 
@@ -358,42 +638,52 @@ export default function WagonReceiptForm({
 
                                     label="Продукт"
 
-                                    value={value?.productId ?? ""}
-
-                                    onChange={(e) =>
-
-                                        update(
-
-                                            "productId",
-
-                                            e.target.value
-
-                                        )
-
+                                    value={
+                                        value?.productId ?? ""
                                     }
 
                                     disabled={disabled}
+
+                                    onChange={
+                                        e =>
+                                            update(
+                                                "productId",
+                                                e.target.value
+                                            )
+                                    }
 
                                     fullWidth
 
                                 >
 
-                                    {products.map(product => (
+                                    {
+                                        products.map(
+                                            p =>
 
-                                        <MenuItem
+                                                <MenuItem
 
-                                            key={product.productId}
+                                                    key={
+                                                        p.productId
+                                                    }
 
-                                            value={product.productId}
+                                                    value={
+                                                        p.productId
+                                                    }
 
-                                        >
+                                                >
 
-                                            {product.name}
+                                                    {p.name}
 
-                                        </MenuItem>
+                                                </MenuItem>
 
-                                    ))}
+                                        )
+                                    }
+
+
                                 </TextField>
+
+
+
 
                                 <TextField
 
@@ -401,15 +691,8 @@ export default function WagonReceiptForm({
 
                                     label="Резервуар"
 
-                                    value={value?.tankId ?? ""}
-
-                                    onChange={(e) =>
-
-                                        update(
-                                            "tankId",
-                                            e.target.value
-                                        )
-
+                                    value={
+                                        value?.tankId ?? ""
                                     }
 
                                     disabled={
@@ -417,103 +700,129 @@ export default function WagonReceiptForm({
                                         !value?.productId
                                     }
 
+                                    onChange={
+                                        e =>
+                                            update(
+                                                "tankId",
+                                                e.target.value
+                                            )
+                                    }
+
                                     fullWidth
 
                                 >
 
-                                    {filteredTanks.map(tank => (
+                                    {
+                                        filteredTanks.map(
+                                            tank =>
 
-                                        <MenuItem
+                                                <MenuItem
 
-                                            key={tank.tankId}
+                                                    key={
+                                                        tank.tankId
+                                                    }
 
-                                            value={tank.tankId}
+                                                    value={
+                                                        tank.tankId
+                                                    }
 
-                                        >
+                                                >
 
-                                            Резервуар №{tank.tankNumber}
+                                                    Резервуар №
+                                                    {tank.tankNumber}
 
-                                        </MenuItem>
+                                                </MenuItem>
 
-                                    ))}
+                                        )
+                                    }
+
 
                                 </TextField>
+
+
+
+
 
                                 {
                                     selectedTank && (
 
                                         <Card
-
-                                            elevation={0}
-
+                                            variant="outlined"
                                             sx={{
-
-                                                mt: 1,
-
                                                 borderRadius: 3,
-
-                                                background:
-                                                    "linear-gradient(135deg,#faf5ff,#f3e5f5)",
-
-                                                border: "1px solid #E1BEE7"
-
+                                                background: "#fafafa"
                                             }}
-
                                         >
 
-                                            <CardContent>
+                                            <CardContent
+                                                sx={{
+                                                    p: 2,
+                                                    "&:last-child": {
+                                                        pb: 2
+                                                    }
+                                                }}
+                                            >
 
-                                                <Stack spacing={2}>
+                                                <Stack spacing={1.5}>
+
+
+                                                    {/* Заголовок */}
 
                                                     <Stack
-
                                                         direction="row"
-
                                                         justifyContent="space-between"
-
                                                         alignItems="center"
-
                                                     >
 
-                                                        <Stack>
+                                                        <Box>
 
                                                             <Typography
-                                                                variant="h6"
                                                                 fontWeight={700}
+                                                                variant="subtitle1"
                                                             >
-
-                                                                🛢 Резервуар №{selectedTank.tankNumber}
-
+                                                                🛢 Резервуар №
+                                                                {selectedTank.tankNumber}
                                                             </Typography>
 
+
                                                             <Typography
-                                                                variant="body2"
+                                                                variant="caption"
                                                                 color="text.secondary"
                                                             >
-
                                                                 {selectedTank.product?.name}
-
                                                             </Typography>
 
-                                                        </Stack>
+                                                        </Box>
+
 
                                                         <Chip
 
-                                                            label={`${Math.round(percent)} %`}
+                                                            size="small"
+
+                                                            label={
+                                                                `${Math.round(percent)} %`
+                                                            }
 
                                                             color={
-                                                                percent > 95
+                                                                percent < 55
                                                                     ? "error"
-                                                                    : percent > 80
+                                                                    :
+                                                                    percent < 80
                                                                         ? "warning"
-                                                                        : "success"
+                                                                        :
+                                                                        "success"
                                                             }
 
                                                         />
 
                                                     </Stack>
 
+
+
+                                                    {/* Один progress */}
+
                                                     <Box>
+
 
                                                         <LinearProgress
 
@@ -521,9 +830,19 @@ export default function WagonReceiptForm({
 
                                                             value={percent}
 
+                                                            color={
+                                                                percent < 55
+                                                                    ? "error"
+                                                                    :
+                                                                    percent < 80
+                                                                        ? "warning"
+                                                                        :
+                                                                        "success"
+                                                            }
+
                                                             sx={{
 
-                                                                height: 12,
+                                                                height: 10,
 
                                                                 borderRadius: 10
 
@@ -531,191 +850,218 @@ export default function WagonReceiptForm({
 
                                                         />
 
+
                                                     </Box>
+
+
+
+                                                    {/* Цифры */}
 
                                                     <Grid
                                                         container
-                                                        spacing={2}
+                                                        spacing={1}
                                                     >
 
-                                                        <Grid
-                                                            size={6}
-                                                        >
+
+                                                        <Grid size={6}>
 
                                                             <Typography
                                                                 variant="caption"
                                                                 color="text.secondary"
                                                             >
-
-                                                                Остаток
-
+                                                                Текущий объем
                                                             </Typography>
+
 
                                                             <Typography
-                                                                variant="h5"
                                                                 fontWeight={700}
                                                             >
-
-                                                                {currentVolume.toLocaleString()} л
-
+                                                                {
+                                                                    formatNumber(
+                                                                        displayedCurrentVolume
+                                                                    )
+                                                                } л
                                                             </Typography>
+
 
                                                         </Grid>
 
-                                                        <Grid
-                                                            size={6}
-                                                        >
+
+
+
+                                                        <Grid size={6}>
 
                                                             <Typography
                                                                 variant="caption"
                                                                 color="text.secondary"
                                                             >
-
                                                                 Вместимость
-
                                                             </Typography>
+
 
                                                             <Typography
-                                                                variant="h5"
                                                                 fontWeight={700}
                                                             >
-
-                                                                {capacity.toLocaleString()} л
-
+                                                                {
+                                                                    formatNumber(
+                                                                        capacity
+                                                                    )
+                                                                } л
                                                             </Typography>
+
 
                                                         </Grid>
 
-                                                        <Grid
-                                                            size={6}
-                                                        >
+
+
+
+                                                        <Grid size={6}>
 
                                                             <Typography
                                                                 variant="caption"
                                                                 color="text.secondary"
                                                             >
-
                                                                 Свободно
-
                                                             </Typography>
 
+
                                                             <Typography
-
-                                                                variant="h5"
-
                                                                 fontWeight={700}
-
                                                                 color="success.main"
-
                                                             >
 
-                                                                {freeVolume.toLocaleString()} л
+                                                                {
+                                                                    formatNumber(
+                                                                        predictedFreeVolume
+                                                                    )
+                                                                } л
 
                                                             </Typography>
+
 
                                                         </Grid>
 
-                                                        <Grid
-                                                            size={6}
-                                                        >
 
-                                                            <Typography
-                                                                variant="caption"
-                                                                color="text.secondary"
-                                                            >
 
-                                                                После слива
 
-                                                            </Typography>
+                                                        {
+                                                            mode !== "view" && (
 
-                                                            <Typography
+                                                                <Grid size={6}>
 
-                                                                variant="h5"
+                                                                    <Typography
+                                                                        variant="caption"
+                                                                        color="text.secondary"
+                                                                    >
+                                                                        После сохранения
+                                                                    </Typography>
 
-                                                                fontWeight={700}
 
-                                                                color={
-                                                                    remain < 0
-                                                                        ? "error.main"
-                                                                        : "primary.main"
-                                                                }
+                                                                    <Typography
+                                                                        fontWeight={700}
+                                                                        color={
+                                                                            remain < 0
+                                                                                ?
+                                                                                "error.main"
+                                                                                :
+                                                                                "primary.main"
+                                                                        }
+                                                                    >
 
-                                                            >
+                                                                        {
+                                                                            formatNumber(
+                                                                                predictedVolume
+                                                                            )
+                                                                        } л
 
-                                                                {remain.toLocaleString()} л
 
-                                                            </Typography>
+                                                                    </Typography>
 
-                                                        </Grid>
+                                                                </Grid>
+
+                                                            )
+                                                        }
+
 
                                                     </Grid>
 
+
+
                                                     {
-                                                        remain < 0 ? (
+                                                        mode !== "view" &&
+                                                        remain < 0 &&
 
-                                                            <Alert severity="error">
+                                                        <Alert
+                                                            severity="error"
+                                                            sx={{
+                                                                py: 0
+                                                            }}
+                                                        >
 
-                                                                В резервуар не помещается
-
-                                                                <b>
-
-                                                                    {" "}
-                                                                    {Math.abs(remain).toLocaleString()} л
-
-                                                                </b>
-
-                                                            </Alert>
-
-                                                        )
-
-                                                            :
-
-                                                            remain < capacity * 0.05 ? (
-
-                                                                <Alert severity="warning">
-
-                                                                    После слива резервуар будет практически заполнен.
-
-                                                                </Alert>
-
-                                                            )
-
-                                                                :
-
-                                                                (
-
-                                                                    <Alert severity="success">
-
-                                                                        Объем полностью помещается.
-
-                                                                    </Alert>
-
+                                                            Не хватает{" "}
+                                                            {
+                                                                formatNumber(
+                                                                    Math.abs(remain)
                                                                 )
+                                                            } л
+
+                                                        </Alert>
 
                                                     }
 
+
+
+                                                    {
+                                                        mode !== "view" &&
+                                                        remain >= 0 &&
+
+                                                        <Alert
+                                                            severity="success"
+                                                            sx={{
+                                                                py: 0
+                                                            }}
+                                                        >
+
+                                                            Объем помещается
+
+                                                        </Alert>
+
+                                                    }
+
+
                                                 </Stack>
 
+
                                             </CardContent>
+
 
                                         </Card>
 
                                     )
-
                                 }
+
+
+
 
                             </Stack>
 
+
                         </CardContent>
+
 
                     </Card>
 
+
                 </Grid>
+
 
             </Grid>
 
+
         </Box>
 
+
     );
+
 
 }

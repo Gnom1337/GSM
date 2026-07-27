@@ -46,14 +46,14 @@ namespace GSM.Application.Handlers.DashboardHandlers
             {
                 var incoming = await _unitOfWork.WagonReceiptRepository.GetSumAsync(
                     predicate: x =>
-                        x.CreatedAt >= day &&
-                        x.CreatedAt < day.AddDays(1),
+                        x.ReceiptDate >= DateOnly.FromDateTime(day) &&
+                        x.ReceiptDate < DateOnly.FromDateTime(day.AddDays(1)),
                     selector: x => x.VolumeActualLiters);
 
                 var outgoing = await _unitOfWork.DispatchRepository.GetSumAsync(
                     predicate: x =>
-                        x.CreatedAt >= day &&
-                        x.CreatedAt < day.AddDays(1),
+                        x.DispatchDate >= DateOnly.FromDateTime(day) &&
+                        x.DispatchDate < DateOnly.FromDateTime(day.AddDays(1)),
                     selector: x => x.VolumeInvoiceLiters);
 
                 chart.Add(new DailyChartDto
