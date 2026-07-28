@@ -5,12 +5,13 @@ using System.Text;
 
 namespace GSM.Domain.Models
 {
-    public class Product
+    public class Product 
     {
         [Key]
         public int ProductId { get; set; }
         public string Name { get; set; }
         public double Density {  get; set; }
 
+       
     }
 }

@@ -23,7 +23,7 @@ import Incoming from '@mui/icons-material/CallReceived';
 import Tank from '@mui/icons-material/OilBarrel';
 import ScheduleSendIcon from '@mui/icons-material/ScheduleSend';
 import Report from '@mui/icons-material/Assignment';
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import AuthContext from "../context/authContext";
 import { logout } from "../services/authService";
@@ -52,7 +52,7 @@ function ResponsiveDrawer() {
     };
     const [auth] = React.useState(true);
     const { setIsAuthenticated } = useContext(AuthContext);
-
+    const location = useLocation();
     const handleLogout = async () => {
         try {
             if (!window.confirm("Вы действительно хотите выйти из системы?")) {
@@ -100,18 +100,27 @@ function ResponsiveDrawer() {
                         
                         <ListItem key={'Статистика'} disablePadding>
                             
-                    <ListItemButton onClick={() => navigate("/stats")}>
+                    <ListItemButton
+                        selected={
+                            location.pathname === "/" ||
+                            location.pathname === "/stats"
+                        }
+                        onClick={() => navigate("/stats")}
+                    >
+                        <ListItemIcon>
+                            <Stats color="primary" />
+                        </ListItemIcon>
 
-                            <ListItemIcon>
-                            <Stats color="primary"/>
-                            </ListItemIcon>
-                        <ListItemText primary={'Статистика'} />
-                                </ListItemButton>
+                        <ListItemText primary="Статистика" />
+                    </ListItemButton>
                         
                         </ListItem>
 
                 <ListItem key={'Приход вагонов'} disablePadding>
-                    <ListItemButton onClick={() => navigate("/incoming")}>
+                    <ListItemButton
+                        selected={location.pathname.startsWith("/incoming")}
+                        onClick={() => navigate("/incoming")}
+                    >
                         <ListItemIcon>
                             <Incoming color="primary" />
                         </ListItemIcon>
@@ -119,7 +128,10 @@ function ResponsiveDrawer() {
                     </ListItemButton>
                 </ListItem>
                 <ListItem key={'Резервуары'} disablePadding>
-                    <ListItemButton onClick={() => navigate("/tanks")}>
+                    <ListItemButton
+                        selected={location.pathname.startsWith("/tanks")}
+                        onClick={() => navigate("/tanks")}
+                    >
                         <ListItemIcon>
                             <Tank color="primary" />
                         </ListItemIcon>
@@ -127,7 +139,10 @@ function ResponsiveDrawer() {
                     </ListItemButton>
                 </ListItem>
                 <ListItem key={'Отпуск в автоцистерны'} disablePadding>
-                    <ListItemButton onClick={() => navigate("/shipment")}>
+                    <ListItemButton
+                        selected={location.pathname.startsWith("/shipment")}
+                        onClick={() => navigate("/shipment")}
+                    >
                         <ListItemIcon>
                             <ScheduleSendIcon color="primary" />
                         </ListItemIcon>
@@ -135,7 +150,10 @@ function ResponsiveDrawer() {
                     </ListItemButton>
                 </ListItem>
                 <ListItem key={'Отчеты'} disablePadding>
-                    <ListItemButton onClick={() => navigate("/reports")}>
+                    <ListItemButton
+                        selected={location.pathname.startsWith("/reports")}
+                        onClick={() => navigate("/reports")}
+                    >
                         <ListItemIcon>
                             <Report color="primary" />
                         </ListItemIcon>
@@ -152,7 +170,10 @@ function ResponsiveDrawer() {
             <List>
                 {['Админ панель'].map((text) => (
                     <ListItem key={text} disablePadding>
-                        <ListItemButton onClick={() => navigate("/admin")}>
+                        <ListItemButton
+                            selected={location.pathname.startsWith("/admin")}
+                            onClick={() => navigate("/admin")}
+                        >
                             <ListItemIcon>
                                 <AdminIcon color="primary"/> 
                             </ListItemIcon>

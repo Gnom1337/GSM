@@ -227,16 +227,15 @@ export default function IncomingPage() {
 
     const editReceipt = (row) => {
 
-        setForm(row);
+        setForm({
+            ...row,
+            oldVolumeActualLiters: row.volumeActualLiters
+        });
 
         setDialog({
-
             open: true,
-
             mode: "edit",
-
             value: row
-
         });
 
     };
