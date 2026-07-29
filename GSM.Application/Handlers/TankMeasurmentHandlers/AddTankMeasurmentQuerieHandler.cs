@@ -31,7 +31,6 @@ namespace GSM.Application.Handlers.TankMeasurmentHandlers
             var user = await _userRepository.GetById(int.Parse(userId.Value));
             if (tank != null)
             {
-                tank.CurentVolumeLiters = request.VolumeLiters;
                 await _unitOfWork.TankRepository.UpdateAsync(tank);
                 var result = await _unitOfWork.TankMeasurementRepository.AddAsync(new TankMeasurement
                 {
@@ -39,7 +38,8 @@ namespace GSM.Application.Handlers.TankMeasurmentHandlers
                     Note = request.Note,
                     User = user,
                     VolumeLiters = request.VolumeLiters,
-                    Tank = tank
+                    Tank = tank,
+                    
 
                 });
                 await _unitOfWork.SaveChangesAsync();

@@ -25,15 +25,17 @@ using GSM.Domain.Interfaces;
 using GSM.Domain.Models;
 using GSM.Infrastructure.Data;
 using GSM.Infrastructure.Repository;
+using GSM.Infrastructure.Services;
 using GSM.Infrastructure.Tools;
 using GSM.Infrastructure.Tools.Options;
 using MediatR;
 using Microsoft.AspNetCore.CookiePolicy;
+using QuestPDF.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
+QuestPDF.Settings.License = LicenseType.Community;
 builder.Services.AddControllers();
 builder.Services.AddSwaggerGen();
 builder.Services.AddEndpointsApiExplorer();
@@ -123,6 +125,8 @@ builder.Services.Configure<JwtOptions>(
     builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<PdfReportGenerator>();
+builder.Services.AddScoped<IReportService, ReportService>();
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())

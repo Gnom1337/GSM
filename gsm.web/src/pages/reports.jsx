@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
     Grid,
@@ -27,9 +27,10 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import Report from '@mui/icons-material/Assignment';
 import dayjs from "dayjs";
-
 import ReportCard from "../components/ReportCard";
-
+import axios from "axios";
+import tanksApi from "../services/tanksApi";
+import productsApi from "../services/productsApi";
 export default function ReportsPage() {
 
     const [open, setOpen] = useState(false);
@@ -43,7 +44,8 @@ export default function ReportsPage() {
     const [tank, setTank] = useState("");
 
     const [product, setProduct] = useState("");
-
+    const [tanks, setTanks] = useState([]);
+    const [products, setProducts] = useState([]);
     const openDialog = (type) => {
         setReportType(type);
         setOpen(true);
@@ -52,7 +54,24 @@ export default function ReportsPage() {
     const closeDialog = () => {
         setOpen(false);
     };
+    useEffect(() => {
 
+        const loadData = async () => {
+            try {
+                const tanks = await tanksApi.getAll();
+                setTanks(tanks);
+
+                const products = await productsApi.getAll();
+                setProducts(products);
+
+            } catch (error) {
+                console.error("Ошибка загрузки справочников:", error);
+            }
+        };
+
+        loadData();
+
+    }, []);
     const getTitle = () => {
 
         switch (reportType) {
@@ -72,18 +91,59 @@ export default function ReportsPage() {
 
     };
 
-    const generateReport = () => {
+    const generateReport = async () => {
 
-        console.log({
-            reportType,
-            from,
-            to,
-            tank,
-            product
+        let url = "";
+
+        switch (reportType) {
+
+            case "balance":
+                url = `/api/reports/daily-balance?date=${from.format("YYYY-MM-DD")}`;
+                if (tank)
+                    url += `&tankId=${tank}`;
+                break;
+
+            case "turnover":
+                url = `/api/reports/turnover?from=${from.format("YYYY-MM-DD")}&to=${to.format("YYYY-MM-DD")}`;
+
+                if (product)
+                    url += `&productId=${product}`;
+
+                break;
+
+            case "loss":
+                url = `/api/reports/loss?from=${from.format("YYYY-MM-DD")}&to=${to.format("YYYY-MM-DD")}`;
+
+                if (tank)
+                    url += `&tankId=${tank}`;
+
+                break;
+        }
+
+        const response = await axios.get(url, {
+            responseType: "blob"
         });
 
-        closeDialog();
+        const blob = new Blob([response.data], {
+            type: "application/pdf"
+        });
 
+        const href = URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+
+        link.href = href;
+
+        link.download =
+            response.headers["content-disposition"]
+                ?.match(/filename="?(.+)"?/)?.[1]
+            || "Report.pdf";
+
+        link.click();
+
+        URL.revokeObjectURL(href);
+
+        closeDialog();
     };
 
     return (
@@ -233,21 +293,19 @@ export default function ReportsPage() {
                                     value={tank}
                                     onChange={(e) => setTank(e.target.value)}
                                 >
+
                                     <MenuItem value="">
                                         Все резервуары
                                     </MenuItem>
 
-                                    <MenuItem value="1">
-                                        РВС-1
-                                    </MenuItem>
-
-                                    <MenuItem value="2">
-                                        РВС-2
-                                    </MenuItem>
-
-                                    <MenuItem value="3">
-                                        РВС-3
-                                    </MenuItem>
+                                    {tanks.map((item) => (
+                                        <MenuItem
+                                            key={item.tankId}
+                                            value={item.tankId}
+                                        >
+                                            {item.tankNumber}
+                                        </MenuItem>
+                                    ))}
 
                                 </TextField>
 
@@ -281,17 +339,14 @@ export default function ReportsPage() {
                                         Все продукты
                                     </MenuItem>
 
-                                    <MenuItem value="92">
-                                        АИ-92
-                                    </MenuItem>
-
-                                    <MenuItem value="95">
-                                        АИ-95
-                                    </MenuItem>
-
-                                    <MenuItem value="diesel">
-                                        ДТ
-                                    </MenuItem>
+                                    {products.map((item) => (
+                                        <MenuItem
+                                            key={item.productId}
+                                            value={item.productId}
+                                        >
+                                            {item.name}
+                                        </MenuItem>
+                                    ))}
 
                                 </TextField>
 
@@ -325,17 +380,14 @@ export default function ReportsPage() {
                                         Все резервуары
                                     </MenuItem>
 
-                                    <MenuItem value="1">
-                                        РВС-1
-                                    </MenuItem>
-
-                                    <MenuItem value="2">
-                                        РВС-2
-                                    </MenuItem>
-
-                                    <MenuItem value="3">
-                                        РВС-3
-                                    </MenuItem>
+                                    {tanks.map((item) => (
+                                        <MenuItem
+                                            key={item.tankId}
+                                            value={item.tankId}
+                                        >
+                                            {item.tankNumber}
+                                        </MenuItem>
+                                    ))}
 
                                 </TextField>
 

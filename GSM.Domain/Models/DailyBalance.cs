@@ -8,11 +8,7 @@ namespace GSM.Domain.Models
 {
     public class DailyBalance
     {
-        public DailyBalance()
-        {
-            ClosingVolumeCalculated = OpeningVolume + TotalReceived - TotalDispatched;
-            LossLiters = ClosingVolumeCalculated - ClosingVolumeActual;
-        }
+       
         [Key]
         public int DailyBalanceId { get; set; }
         public DateOnly BalanceDate { get; set;  }
