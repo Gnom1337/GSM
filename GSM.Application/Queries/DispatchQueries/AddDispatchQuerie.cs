@@ -17,6 +17,6 @@ namespace GSM.Application.Queries.DispatchQueries
         public string RecipientOrg { get; set; }
         public double VolumeInvoiceLiters { get; set; }
         public string WaybillNumber { get; set; }
-        public int UserId { get; set; }
+        public string Status { get; set; }
     }
 }

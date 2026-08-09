@@ -99,6 +99,11 @@ export default function IncomingPage() {
             field: "waybillNumber",
             headerName: "Накладная",
             flex: 1
+        },
+        {
+            field: "status",
+            headerName: "Статус",
+            flex: 1
         }
 
     ];
@@ -191,7 +196,8 @@ export default function IncomingPage() {
 
             discrepancyLiters: 0,
 
-            waybillNumber: ""
+            waybillNumber: "",
+            status: "В ожидании"
 
         };
 

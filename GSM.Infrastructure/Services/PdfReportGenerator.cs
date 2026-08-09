@@ -3,277 +3,392 @@ using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
 
-
 public class PdfReportGenerator
 {
-
-
     private byte[] Build(
-    string title,
-    Action<IContainer> content)
+        string title,
+        Action<IContainer> content)
     {
-
-
-        var document =
-        Document.Create(doc =>
+        var document = Document.Create(doc =>
         {
-
-
             doc.Page(page =>
             {
-
-
                 page.Size(PageSizes.A4);
 
-                page.Margin(35);
+                page.MarginTop(30);
+                page.MarginBottom(30);
+                page.MarginLeft(30);
+                page.MarginRight(30);
 
 
+                // =====================================================
+                // HEADER
+                // =====================================================
 
                 page.Header()
-        .AlignCenter()
-        .Text(title)
-        .FontSize(22)
-        .Bold();
+                    .Column(header =>
+                    {
+                        header.Item()
+                            .Row(row =>
+                            {
+                                // ЛОГОТИП
+                                row.ConstantItem(100)
+                                    .Height(55)
+                                    .AlignMiddle()
+                                    .Image(GetLogoPath());
 
 
+                                // ЗАГОЛОВОК
+                                row.RelativeItem()
+                                    .AlignMiddle()
+                                    .AlignCenter()
+                                    .Text(title)
+                                    .FontSize(20)
+                                    .Bold();
+
+
+                                // Чтобы заголовок был по центру страницы
+                                row.ConstantItem(100);
+                            });
+
+
+                        header.Item()
+                            .PaddingTop(10)
+                            .LineHorizontal(1)
+                            .LineColor(Colors.Grey.Medium);
+                    });
+
+
+                // =====================================================
+                // CONTENT
+                // =====================================================
 
                 page.Content()
-        .PaddingTop(20)
-        .Element(content);
+                    .PaddingTop(20)
+                    .Element(content);
 
 
+                // =====================================================
+                // FOOTER
+                // =====================================================
 
                 page.Footer()
-        .AlignCenter()
-        .Text(
-        $"Сформировано: {DateTime.Now:dd.MM.yyyy HH:mm}"
-        );
+                    .PaddingTop(10)
+                    .AlignCenter()
+                    .Text(text =>
+                    {
+                        text.Span(
+                            $"Сформировано: {DateTime.Now:dd.MM.yyyy HH:mm}"
+                        )
+                        .FontSize(8)
+                        .FontColor(Colors.Grey.Darken1);
 
+                        text.Span("   |   Страница ")
+                            .FontSize(8)
+                            .FontColor(Colors.Grey.Darken1);
 
+                        text.CurrentPageNumber()
+                            .FontSize(8);
+
+                        text.Span(" из ")
+                            .FontSize(8);
+
+                        text.TotalPages()
+                            .FontSize(8);
+                    });
             });
-
-
         });
 
 
         return document.GeneratePdf();
-
     }
 
 
+    // =============================================================
+    // LOGO
+    // =============================================================
+
+    private static string GetLogoPath()
+    {
+        return Path.Combine(
+            AppContext.BaseDirectory,
+            "Services",
+            "Reports",
+            "Tatneft_Logo.png"
+        );
+    }
 
 
-
+    // =============================================================
+    // DAILY BALANCE
+    // =============================================================
 
     public byte[] GenerateDailyBalance(
-    List<DailyBalanceDto> data)
+        List<DailyBalanceDto> data)
     {
-
-
         return Build(
-        "Суточный баланс резервуаров",
-        container =>
-        {
-
-            container.Table(table =>
+            "Суточный баланс резервуаров",
+            container =>
             {
-
-                table.ColumnsDefinition(c =>
+                container.Table(table =>
                 {
+                    table.ColumnsDefinition(c =>
+                    {
+                        c.RelativeColumn(2.2f);
+                        c.RelativeColumn(2.2f);
+                        c.RelativeColumn(1.5f);
+                        c.RelativeColumn(1.5f);
+                        c.RelativeColumn(1.5f);
+                    });
 
-                    c.RelativeColumn();
 
-                    c.RelativeColumn();
+                    // HEADER
 
-                    c.RelativeColumn();
+                    table.Header(h =>
+                    {
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .Text("Резервуар");
 
-                    c.RelativeColumn();
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .Text("Продукт");
 
-                    c.RelativeColumn();
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .AlignRight()
+                            .Text("Приход");
 
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .AlignRight()
+                            .Text("Расход");
+
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .AlignRight()
+                            .Text("Остаток");
+                    });
+
+
+                    // DATA
+
+                    foreach (var x in data)
+                    {
+                        table.Cell()
+                            .Element(DataCell)
+                            .Text(x.TankNumber);
+
+                        table.Cell()
+                            .Element(DataCell)
+                            .Text(x.ProductName);
+
+                        table.Cell()
+                            .Element(NumberCell)
+                            .Text(
+                                $"{x.TotalReceived:N0} л"
+                            );
+
+                        table.Cell()
+                            .Element(NumberCell)
+                            .Text(
+                                $"{x.TotalDispatched:N0} л"
+                            );
+
+                        table.Cell()
+                            .Element(NumberCell)
+                            .Text(
+                                $"{x.ClosingVolumeActual:N0} л"
+                            );
+                    }
                 });
-
-
-                table.Header(h =>
-                {
-
-                    h.Cell().Text("Резервуар");
-                    h.Cell().Text("Продукт");
-                    h.Cell().Text("Приход");
-                    h.Cell().Text("Расход");
-                    h.Cell().Text("Остаток");
-
-                });
-
-
-
-                foreach (var x in data)
-                {
-
-                    table.Cell().Text(x.TankNumber);
-
-                    table.Cell().Text(x.ProductName);
-
-
-                    table.Cell()
-            .Text($"{x.TotalReceived:N0} л");
-
-
-                    table.Cell()
-            .Text($"{x.TotalDispatched:N0} л");
-
-
-                    table.Cell()
-            .Text($"{x.ClosingVolumeCalculated:N0} л");
-
-
-                }
-
-
             });
-
-
-        });
-
-
     }
 
 
-
-
-
-
+    // =============================================================
+    // TURNOVER
+    // =============================================================
 
     public byte[] GenerateTurnover(
-    List<TurnoverDto> data)
+        List<TurnoverDto> data)
     {
-
-
         return Build(
-        "Оборотная ведомость",
-        container =>
-        {
-
-            container.Table(t =>
+            "Оборотная ведомость",
+            container =>
             {
-
-                t.ColumnsDefinition(c =>
+                container.Table(table =>
                 {
-                    c.RelativeColumn();
-                    c.RelativeColumn();
-                    c.RelativeColumn();
-                    c.RelativeColumn();
+                    table.ColumnsDefinition(c =>
+                    {
+                        c.RelativeColumn(2.2f);
+                        c.RelativeColumn(2.0f);
+                        c.RelativeColumn(1.5f);
+                        c.RelativeColumn(1.5f);
+                    });
+
+
+                    table.Header(h =>
+                    {
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .Text("Продукт");
+
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .Text("Резервуар");
+
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .AlignRight()
+                            .Text("Приход");
+
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .AlignRight()
+                            .Text("Расход");
+                    });
+
+
+                    foreach (var x in data)
+                    {
+                        table.Cell()
+                            .Element(DataCell)
+                            .Text(x.ProductName);
+
+                        table.Cell()
+                            .Element(DataCell)
+                            .Text(x.TankNumber);
+
+                        table.Cell()
+                            .Element(NumberCell)
+                            .Text(
+                                $"{x.ReceivedLiters:N0} л"
+                            );
+
+                        table.Cell()
+                            .Element(NumberCell)
+                            .Text(
+                                $"{x.DispatchedLiters:N0} л"
+                            );
+                    }
                 });
-
-
-                t.Header(h =>
-                {
-
-                    h.Cell().Text("Продукт");
-
-                    h.Cell().Text("Резервуар");
-
-                    h.Cell().Text("Приход");
-
-                    h.Cell().Text("Расход");
-
-                });
-
-
-
-                foreach (var x in data)
-                {
-
-                    t.Cell().Text(x.ProductName);
-
-                    t.Cell().Text(x.TankNumber);
-
-                    t.Cell().Text($"{x.ReceivedLiters:N0}");
-
-                    t.Cell().Text($"{x.DispatchedLiters:N0}");
-
-                }
-
-
             });
-
-
-        });
-
     }
 
 
-
+    // =============================================================
+    // LOSS
+    // =============================================================
 
     public byte[] GenerateLoss(
-    List<LossDto> data)
+        List<LossDto> data)
     {
-
-
         return Build(
-        "Отчет по потерям",
-        container =>
-        {
-
-            container.Table(t =>
+            "Отчет по потерям",
+            container =>
             {
-
-
-                t.ColumnsDefinition(c =>
+                container.Table(table =>
                 {
+                    table.ColumnsDefinition(c =>
+                    {
+                        c.RelativeColumn(1.5f);
+                        c.RelativeColumn(2.2f);
+                        c.RelativeColumn(1.5f);
+                        c.RelativeColumn(1.5f);
+                    });
 
-                    c.RelativeColumn();
 
-                    c.RelativeColumn();
+                    table.Header(h =>
+                    {
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .Text("Дата");
 
-                    c.RelativeColumn();
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .Text("Резервуар");
 
-                    c.RelativeColumn();
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .AlignRight()
+                            .Text("Расчет");
 
+                        h.Cell()
+                            .Element(HeaderCell)
+                            .AlignRight()
+                            .Text("Потери");
+                    });
+
+
+                    foreach (var x in data)
+                    {
+                        table.Cell()
+                            .Element(DataCell)
+                            .Text(
+                                x.Date.ToString("dd.MM.yyyy")
+                            );
+
+                        table.Cell()
+                            .Element(DataCell)
+                            .Text(x.TankNumber);
+
+                        table.Cell()
+                            .Element(NumberCell)
+                            .Text(
+                                $"{x.CalculatedVolume:N0} л"
+                            );
+
+                        table.Cell()
+                            .Element(NumberCell)
+                            .Text(
+                                $"{x.LossLiters:N0} л"
+                            );
+                    }
                 });
-
-
-                t.Header(h =>
-                {
-
-                    h.Cell().Text("Дата");
-
-                    h.Cell().Text("Резервуар");
-
-                    h.Cell().Text("Расчет");
-
-                    h.Cell().Text("Потери");
-
-                });
-
-
-
-
-                foreach (var x in data)
-                {
-
-                    t.Cell().Text(x.Date.ToString());
-
-                    t.Cell().Text(x.TankNumber);
-
-
-                    t.Cell()
-            .Text($"{x.CalculatedVolume:N0}");
-
-
-                    t.Cell()
-            .Text($"{x.LossLiters:N0}");
-
-                }
-
-
             });
-
-
-        });
-
-
     }
 
 
+    // =============================================================
+    // TABLE STYLES
+    // =============================================================
+
+    private static IContainer HeaderCell(
+        IContainer container)
+    {
+        return container
+            .Background(Colors.Grey.Lighten2)
+            .Border(1)
+            .BorderColor(Colors.Grey.Darken1)
+            .PaddingVertical(7)
+            .PaddingHorizontal(6)
+            .AlignMiddle();
+    }
+
+
+    private static IContainer DataCell(
+        IContainer container)
+    {
+        return container
+            .Border(1)
+            .BorderColor(Colors.Grey.Lighten1)
+            .PaddingVertical(6)
+            .PaddingHorizontal(6)
+            .AlignMiddle();
+    }
+
+
+    private static IContainer NumberCell(
+        IContainer container)
+    {
+        return container
+            .Border(1)
+            .BorderColor(Colors.Grey.Lighten1)
+            .PaddingVertical(6)
+            .PaddingHorizontal(6)
+            .AlignMiddle()
+            .AlignRight();
+    }
 }
+

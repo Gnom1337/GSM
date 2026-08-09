@@ -14,5 +14,7 @@ namespace GSM.Application.Queries.TankMeasurmentQueries
         public double VolumeLiters { get; set; }
         public int UserId { get; set; }
         public string? Note { get; set; }
+        public double FuelHeight { get; set; }
+        public string Status { get; set; }
     }
 }

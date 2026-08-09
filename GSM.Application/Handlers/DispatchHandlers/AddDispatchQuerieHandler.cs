@@ -42,11 +42,15 @@ namespace GSM.Application.Handlers.DispatchHandlers
                      WaybillNumber = request.WaybillNumber,
                      Tank = tank,
                      User = user,
+                     Status = request.Status,
                              
                      
                 });
-                tank.CurentVolumeLiters -= request.VolumeInvoiceLiters;
-                await _unitOfWork.TankRepository.UpdateAsync(tank);
+                if (request.Status == "Отгружен")
+                {
+                    tank.CurentVolumeLiters -= request.VolumeInvoiceLiters;
+                    await _unitOfWork.TankRepository.UpdateAsync(tank);
+                }
                 await _unitOfWork.SaveChangesAsync();
                 return new BaseResponse<Dispatch> { Status = result.Status, Message = result.Message };
             }

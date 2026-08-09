@@ -46,6 +46,11 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
             
             if (wagonReceipt != null)
             {
+                if (request.Status == "Отгружен" && wagonReceipt.Status!="Отгружен")
+                {
+                    tank.CurentVolumeLiters += request.VolumeActualLiters;
+                    await _unitOfWork.TankRepository.UpdateAsync(tank);
+                }
                 wagonReceipt.Tank= tank;
                 wagonReceipt.Product= product;
                 wagonReceipt.WagonNumber= request.WagonNumber;
@@ -54,6 +59,7 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
                 wagonReceipt.ReceiptDate= request.ReceiptDate;
                 wagonReceipt.VolumeInvoiceLiters= request.VolumeInvoiceLiters;
                 wagonReceipt.DiscrepancyLiters = request.VolumeInvoiceLiters = request.VolumeActualLiters;
+                wagonReceipt.Status = request.Status;
                 var result = await _unitOfWork.WagonReceiptRepository.UpdateAsync(wagonReceipt);
                 await _unitOfWork.SaveChangesAsync();
                 return new BaseResponse<WagonReceipt> { Status = result.Status, Message = result.Message };

@@ -7,7 +7,7 @@ import {
 } from "@mui/material";
 
 import ScheduleSendIcon from "@mui/icons-material/ScheduleSend";
-
+import DispatchDialog from "../components/DispatchDialog";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
@@ -19,8 +19,7 @@ import format from "date-fns/format";
 import dispatchApi from "../services/dispatchApi";
 import tanksApi from "../services/tanksApi";
 
-import EntityDialog from "../components/EntityDialog";
-import DispatchForm from "../components/DispatchForm";
+
 
 import AppSnackbar from "../components/AppSnackbar";
 import useSnackbar from "../hooks/useSnackbar";
@@ -68,7 +67,7 @@ export default function ShipmentPage() {
                     id:item.dispatchId,
 
                     title:
-                        `${item.recipientOrg} (${item.volumeInvoiceLiters} л)`,
+                        `${item.recipientOrg} (${item.volumeInvoiceLiters} л) - ${item.status}`,
 
                     start:
                         item.dispatchDate,
@@ -133,8 +132,8 @@ export default function ShipmentPage() {
             driverName:"",
             recipientOrg:"",
             volumeInvoiceLiters:"",
-            waybillNumber:""
-
+            waybillNumber:"",
+            status: "В ожидании"
         };
 
 
@@ -152,8 +151,52 @@ export default function ShipmentPage() {
         });
 
     };
+    const editCurrentDispatch = () => {
 
+        setDialog(prev => ({
+            ...prev,
+            mode: "edit"
+        }));
 
+    };
+    const deleteDispatch = async (value) => {
+
+        if (!value?.dispatchId) {
+            return;
+        }
+
+        const confirmed = window.confirm(
+            "Вы действительно хотите удалить этот отпуск?"
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            const result =
+                await dispatchApi.remove(value.dispatchId);
+
+            showSnackbar(
+                result.data ?? result
+            );
+
+            closeDialog();
+
+            await loadData();
+
+        } catch (e) {
+
+            console.error(e);
+
+            showSnackbar({
+                Status: "Error",
+                Message: "Ошибка удаления."
+            });
+
+        }
+    };
 
 
 
@@ -209,38 +252,47 @@ export default function ShipmentPage() {
 
 
 
-    const eventContent=(arg)=>{
+    const eventContent = (arg) => {
 
+        const status = arg.event.extendedProps.data?.status;
+
+        const statusStyles = {
+            "В ожидании": {
+                background: "#fff3cd",
+                color: "#856404"
+            },
+
+            "Не отгружен": {
+                background: "#f8d7da",
+                color: "#842029"
+            },
+
+            "Отгружен": {
+                background: "#43a047",
+                color: "#fff"
+            }
+        };
+
+        const style =
+            statusStyles[status] ??
+            statusStyles["Отгружен"];
 
         return (
-
             <Box
                 sx={{
-                    background:
-                        "linear-gradient(135deg,#673ab7,#7E57C2)",
-
-                    borderRadius:2,
-
-                    color:"#fff",
-
-                    px:1,
-
-                    py:.5,
-
-                    fontWeight:600,
-
-                    fontSize:13,
-
-                    overflow:"hidden"
+                    background: style.background,
+                    borderRadius: 2,
+                    color: style.color,
+                    px: 1,
+                    py: 0.5,
+                    fontWeight: 600,
+                    fontSize: 13,
+                    overflow: "hidden"
                 }}
             >
-
                 {arg.event.title}
-
             </Box>
-
         );
-
     };
 
 
@@ -401,8 +453,8 @@ export default function ShipmentPage() {
                     "& .fc-button": {
 
 
-                        background: "#673ab7!important",
-
+                        background: "#43a047!important",
+                        padding: "5px",
                         border: "0!important",
 
                         borderRadius: "10px!important",
@@ -428,7 +480,7 @@ export default function ShipmentPage() {
                     "& .fc-day-today": {
 
                         background:
-                            "#F3E5F5!important"
+                            "#c8e6c9!important"
 
                     },
 
@@ -516,49 +568,17 @@ export default function ShipmentPage() {
 
 
 
-        <EntityDialog
-
-            open={dialog.open}
-
-            mode={dialog.mode}
-
-            title={
-                dialog.mode==="add"
-
-                ? "Добавить отпуск"
-
-                :
-
-                dialog.mode==="edit"
-
-                ? "Редактирование отпуска"
-
-                :
-
-                "Просмотр отпуска"
-
-            }
-
-            onClose={closeDialog}
-
-            onSave={saveDispatch}
-
-        >
-
-            <DispatchForm
-
-                value={form}
-
+            <DispatchDialog
+                open={dialog.open}
                 mode={dialog.mode}
-
+                value={form}
                 tanks={tanks}
-
+                onClose={closeDialog}
+                onSave={saveDispatch}
+                onEdit={editCurrentDispatch}
+                onDelete={deleteDispatch}
                 onChange={setForm}
-
             />
-
-
-        </EntityDialog>
 
 
 

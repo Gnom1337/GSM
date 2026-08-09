@@ -19,5 +19,6 @@ namespace GSM.Application.Queries.WagonReceiptQueries
         public double VolumeActualLiters { get; set; }
         public double DiscrepancyLiters { get; set; }
         public string WaybillNumber { get; set; }
+        public string Status { get; set; }
     }
 }

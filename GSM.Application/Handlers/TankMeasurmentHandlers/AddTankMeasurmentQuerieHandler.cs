@@ -37,8 +37,10 @@ namespace GSM.Application.Handlers.TankMeasurmentHandlers
                     MeasuredAt = DateTime.Now,
                     Note = request.Note,
                     User = user,
+                    FuelHeight = request.FuelHeight,
                     VolumeLiters = request.VolumeLiters,
                     Tank = tank,
+                    Status = request.Status,
                     
 
                 });

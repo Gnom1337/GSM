@@ -51,6 +51,11 @@ export default function TankJournalDialog({
             flex: 1
         },
         {
+            field: "fuelHeight",
+            headerName: "Высота ост. топ. (м)",
+            flex: 1
+        },
+        {
             field: "user.FullName",
             headerName: "Оператор",
             flex: 1,
@@ -61,6 +66,11 @@ export default function TankJournalDialog({
             field: "note",
             headerName: "Примечание",
             flex: 2
+        },
+        {
+            field: "status",
+            headerName: "Статус",
+            flex: 1
         }
     ];
 
@@ -116,8 +126,9 @@ export default function TankJournalDialog({
             measuredAt: new Date(),
 
             volumeLiters: "",
-
-            note: ""
+            fuelHeight: "",
+            note: "",
+            status: "На проверке"
 
         };
 

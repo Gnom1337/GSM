@@ -12,14 +12,11 @@ namespace GSM.Application.Queries.DispatchQueries
         public int DispatchId { get; set; }
         public DateOnly DispatchDate { get; set; }
         public int TankId { get; set; }
-        public Tank Tank { get; set; }
         public string TruckNumber { get; set; }
         public string DriverName { get; set; }
         public string RecipientOrg { get; set; }
         public double VolumeInvoiceLiters { get; set; }
         public string WaybillNumber { get; set; }
-        public int UserId { get; set; }
-        public User User { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public string Status { get; set; }
     }
 }

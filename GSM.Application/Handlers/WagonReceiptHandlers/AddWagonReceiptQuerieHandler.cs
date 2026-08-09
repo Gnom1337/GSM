@@ -30,8 +30,12 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
             var product = await _unitOfWork.ProductRepository.GetById(request.ProductId);
             var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
             var user = await _userRepository.GetById(int.Parse(userId.Value));
-            tank.CurentVolumeLiters += request.VolumeActualLiters;
-            await _unitOfWork.TankRepository.UpdateAsync(tank);
+            if (request.Status == "Отгружен")
+            {
+                tank.CurentVolumeLiters += request.VolumeActualLiters;
+                await _unitOfWork.TankRepository.UpdateAsync(tank);
+            }
+            
             var result = await _unitOfWork.WagonReceiptRepository.AddAsync(new WagonReceipt
             {
                  CreatedAt = DateTime.UtcNow,
@@ -44,6 +48,7 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
                  Tank = tank,
                  Product = product,
                  User = user,
+                 Status = request.Status,
                        
             });
             await _unitOfWork.SaveChangesAsync();

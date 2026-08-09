@@ -22,8 +22,7 @@ namespace GSM.Application.DTOs
         public double ActualVolume { get; set; }
 
 
-        public double LossLiters =>
-            CalculatedVolume - ActualVolume;
+        public double LossLiters { get; set; }
 
     }
 }

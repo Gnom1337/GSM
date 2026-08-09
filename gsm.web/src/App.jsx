@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { deepPurple } from '@mui/material/colors'
 import ResponsiveDrawer from "../src/components/menu";
 import StatsPage from "./pages/Stats";
 import TanksPage from "./pages/Tanks";
@@ -14,8 +13,12 @@ import ProtectedRoute from "./components/protectedRoute";
 import RoleRoute from "./components/RoleRoute";
 const theme = createTheme({
     palette: {
-        primary: deepPurple,
-        secondary: deepPurple,
+        primary: {
+            main: '#1b5e20',
+        },
+        secondary: {
+            main: '#43a047',
+        },
     },
 });
 

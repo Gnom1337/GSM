@@ -35,7 +35,8 @@ export default function DispatchForm({
         driverName: "",
         recipientOrg: "",
         volumeInvoiceLiters: "",
-        waybillNumber: ""
+        waybillNumber: "",
+        status: "В ожидании"
     });
     const selectedTank =
         tanks.find(t => t.tankId === form.tankId);
@@ -64,7 +65,8 @@ export default function DispatchForm({
                     value.volumeInvoiceLiters ?? "",
 
                 waybillNumber:
-                    value.waybillNumber ?? ""
+                    value.waybillNumber ?? "",
+                status: value.status ?? "В ожидании",
 
             });
 
@@ -142,7 +144,7 @@ export default function DispatchForm({
                         <LocalShippingIcon color="primary" />
                         <Box>
                             <Typography variant="caption">
-                                Автоцистерна
+                                Номер машины
                             </Typography>
 
                             <Typography variant="h6">
@@ -218,9 +220,23 @@ export default function DispatchForm({
 
                         </Box>
                     </Stack>
+                    <Divider />
+                    <Stack direction="row" spacing={2}>
+                        <NumbersIcon color="primary" />
+                        <Box>
 
+                            <Typography variant="caption">
+                                Статус
+                            </Typography>
+
+                            <Typography variant="h6">
+                                {form.status}
+                            </Typography>
+
+                        </Box>
+                    </Stack>
                 </Stack>
-
+                
             </Paper>
 
         );
@@ -321,7 +337,7 @@ export default function DispatchForm({
             </FormControl>
 
             <TextField
-                label="Номер автоцистерны"
+                label="Номер машины"
                 value={form.truckNumber}
                 onChange={(e) =>
                     handleChange(
@@ -386,7 +402,26 @@ export default function DispatchForm({
                 }
                 fullWidth
             />
+            <TextField
+                select
+                label="Статус"
+                value={value?.status ?? "В ожидании"}
+                onChange={(e) =>
+                    handleChange("status", e.target.value)
+                }
+            >
+                <MenuItem value="В ожидании">
+                    В ожидании
+                </MenuItem>
 
+                <MenuItem value="Отгружен">
+                    Отгружен
+                </MenuItem>
+
+                <MenuItem value="Не отгружен">
+                    Не отгружен
+                </MenuItem>
+            </TextField>
         </Stack>
 
     );

@@ -15,10 +15,12 @@ namespace GSM.Domain.Models
         public int TankId {  get; set; }
         public Tank Tank { get; set; }
         public DateTime MeasuredAt { get; set; }
+        public double FuelHeight { get; set; }
         public double VolumeLiters {  get; set; }
         [ForeignKey(nameof(UserId))]
         public int UserId { get; set; }
         public User User { get; set; }
         public string? Note { get; set; }
+        public string Status { get; set; }
     }
 }

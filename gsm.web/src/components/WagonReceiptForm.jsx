@@ -23,7 +23,8 @@ export default function WagonReceiptForm({
     mode,
     onChange,
     products,
-    tanks
+    tanks,
+
 }) {
 
 
@@ -302,7 +303,7 @@ export default function WagonReceiptForm({
 
                                 >
 
-                                    <TrainIcon color="primary" />
+                                    <TrainIcon color="secondary" />
 
 
                                     <Typography
@@ -418,7 +419,18 @@ export default function WagonReceiptForm({
                                                 }
 
                                             />
-
+                                            <ViewField
+                                                label="Статус"
+                                                value={
+                                                    value?.status === "В ожидании"
+                                                        ? "В ожидании"
+                                                        : value?.status === "Отгружен"
+                                                            ? "Отгружен"
+                                                            : value?.status === "Не отгружен"
+                                                                ? "Не отгружен"
+                                                                : "-"
+                                                }
+                                            />
                                         </>
 
 
@@ -545,8 +557,29 @@ export default function WagonReceiptForm({
                                                 fullWidth
 
                                             />
+                                           
+                                            <TextField
+                                                select
+                                                label="Статус"
+                                                value={value?.status ?? "В ожидании"}
+                                                disabled={disabled}
+                                                onChange={(e) =>
+                                                    update("status", e.target.value)
+                                                }
+                                                fullWidth
+                                            >
+                                                <MenuItem value="В ожидании">
+                                                    В ожидании
+                                                </MenuItem>
 
+                                                <MenuItem value="Отгружен">
+                                                    Отгружен
+                                                </MenuItem>
 
+                                                <MenuItem value="Не отгружен">
+                                                    Не отгружен
+                                                </MenuItem>
+                                            </TextField>
                                         </>
 
                                 }
@@ -878,7 +911,7 @@ export default function WagonReceiptForm({
                                                             >
                                                                 {
                                                                     formatNumber(
-                                                                        displayedCurrentVolume
+                                                                        currentVolume
                                                                     )
                                                                 } л
                                                             </Typography>

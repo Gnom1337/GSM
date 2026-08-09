@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -208,7 +207,7 @@ function ResponsiveDrawer() {
                         <MenuIcon />
                     </IconButton>
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        GSM app
+                        Tatneft
                     </Typography>
                     {auth && (
                         <div>
@@ -307,12 +306,6 @@ function ResponsiveDrawer() {
     );
 }
 
-ResponsiveDrawer.propTypes = {
-    /**
-     * Injected by the documentation to work in an iframe.
-     * Remove this when copying and pasting into your project.
-     */
-    window: PropTypes.func,
-};
+
 
 export default ResponsiveDrawer;

@@ -4,9 +4,14 @@ import {
     Typography,
     Paper,
     Divider,
-    Box
+    Box,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from "@mui/material";
-
+import AuthContext from "../context/authContext";
+import { useContext } from "react";
 import {
     AccessTime,
     WaterDrop,
@@ -21,12 +26,13 @@ export default function TankMeasurementForm({
     mode,
     onChange
 }) {
-
+    const { user } = useContext(AuthContext);
     const [form, setForm] = useState({
         measuredAt: "",
         volumeLiters: "",
         note: "",
-        user: null
+        user: null,
+        status: "На проверке"
     });
 
     useEffect(() => {
@@ -38,8 +44,8 @@ export default function TankMeasurementForm({
                 measuredAt: value.measuredAt ?? "",
                 volumeLiters: value.volumeLiters ?? "",
                 note: value.note ?? "",
-                user: value.user ?? null
-
+                user: value.user ?? null,
+                status: value.status ?? "На проверке"
             });
 
         }
@@ -185,7 +191,32 @@ export default function TankMeasurementForm({
                         </Box>
 
                     </Stack>
+                    <Divider />
 
+                    <Stack
+                        direction="row"
+                        spacing={2}
+                        alignItems="center"
+                    >
+
+                        <Person color="primary" />
+
+                        <Box>
+
+                            <Typography
+                                variant="caption"
+                                color="text.secondary"
+                            >
+                                Статус
+                            </Typography>
+
+                            <Typography variant="h6">
+                                {form.status}
+                            </Typography>
+
+                        </Box>
+
+                    </Stack>
                 </Stack>
 
             </Paper>
@@ -235,7 +266,18 @@ export default function TankMeasurementForm({
                 }
                 fullWidth
             />
-
+            <TextField
+                label="Высота ост. топ. (м)"
+                type="number"
+                value={value?.fuelHeight ?? ""}
+                onChange={(e) =>
+                    handleChange(
+                        "fuelHeight",
+                        Number(e.target.value)
+                    )
+                }
+                fullWidth
+            />
             <TextField
                 label="Примечание"
                 value={value?.note ?? ""}
@@ -249,7 +291,19 @@ export default function TankMeasurementForm({
                 rows={4}
                 fullWidth
             />
-
+            <FormControl fullWidth>
+                <InputLabel>Статус</InputLabel>
+                <Select
+                    value={form.status}
+                    label="Статус"
+                    disabled={user?.role !== "Admin" && user?.role !== "Master"}
+                    onChange={(e) => handleChange("status", e.target.value)}
+                >
+                    <MenuItem value="На проверке">На проверке</MenuItem>
+                    <MenuItem value="Утверждено">Утверждено</MenuItem>
+                    <MenuItem value="На доработке">На доработке</MenuItem>
+                </Select>
+            </FormControl>
         </Stack>
 
     );

@@ -10,7 +10,6 @@ namespace GSM.Application.Queries.WagonReceiptQueries
 {
     public class AddWagonReceiptQuerie : IRequest<BaseResponse<WagonReceipt>>
     {
-        public int WagonReceiptId { get; set; }
         public string WagonNumber { get; set; }
         public DateOnly ReceiptDate { get; set; }
         public int ProductId { get; set; }
@@ -18,5 +17,6 @@ namespace GSM.Application.Queries.WagonReceiptQueries
         public double VolumeInvoiceLiters { get; set; }
         public double VolumeActualLiters { get; set; }
         public string WaybillNumber { get; set; }
+        public string Status { get; set; }
     }
 }
