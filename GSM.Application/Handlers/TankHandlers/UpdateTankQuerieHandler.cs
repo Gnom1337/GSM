@@ -29,6 +29,7 @@ namespace GSM.Application.Handlers.TankHandlers
                     entity.CapacityLiters = request.CapacityLiters;
                     entity.TankNumber = request.TankNumber;
                     entity.Product = product;
+                    entity.Density = request.Density;
                     var result = _unitOfWork.TankRepository.UpdateAsync(entity);
                     await _unitOfWork.SaveChangesAsync();
                     return new BaseResponse<Tank> { Message = result.Result.Message, Status = result.Result.Status };  

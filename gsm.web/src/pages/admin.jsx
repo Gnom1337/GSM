@@ -50,7 +50,6 @@ export default function AdminPage() {
 
     const [editedProduct, setEditedProduct] = useState({
         name: "",
-        density: ""
     });
 
     // Snackbar
@@ -218,7 +217,6 @@ export default function AdminPage() {
 
             name: "",
 
-            density: ""
 
         });
 
@@ -353,12 +351,6 @@ export default function AdminPage() {
             field: "name",
             headerName: "Наименование",
             flex: 1
-        },
-
-        {
-            field: "density",
-            headerName: "Плотность",
-            flex: 0.6
         }
 
     ];

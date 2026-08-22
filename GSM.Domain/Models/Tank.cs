@@ -15,6 +15,7 @@ namespace GSM.Domain.Models
         [ForeignKey(nameof(ProductId))]
         public int ProductId { get; set; }
         public Product Product { get; set; }
+        public double Density { get; set; }
         public double CurentVolumeLiters { get; set; } = 0;
 
     }

@@ -23,7 +23,6 @@ namespace GSM.Application.Handlers.ProductHandlers
             if (product != null)
             {
                 product.Name = request.Name;
-                product.Density = request.Density;
                 var result = await _unitOfWork.ProductRepository.UpdateAsync(product);
                 await _unitOfWork.SaveChangesAsync();
                 return new BaseResponse<Product> { Status = result.Status, Message = result.Message };

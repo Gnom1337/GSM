@@ -21,7 +21,6 @@ namespace GSM.Application.Handlers.ProductHandlers
         {
             var result = await _unitOfWork.ProductRepository.AddAsync(new Product
             {
-                 Density = request.Density,
                  Name = request.Name,
             });
             await _unitOfWork.SaveChangesAsync();

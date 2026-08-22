@@ -3,12 +3,11 @@ import {
     Stack,
     Typography,
     Paper,
-    Divider,
     Box
 } from "@mui/material";
 
 import Inventory2Icon from '@mui/icons-material/Inventory2';
-import DensityMediumIcon from '@mui/icons-material/DensityMedium';
+
 
 import { useEffect, useState } from "react";
 
@@ -22,7 +21,7 @@ export default function ProductForm({
 
     const [form, setForm] = useState({
         name: "",
-        density: ""
+        
     });
 
 
@@ -36,7 +35,7 @@ export default function ProductForm({
 
                 name: value.name ?? "",
 
-                density: value.density ?? ""
+                
 
             });
 
@@ -143,65 +142,6 @@ export default function ProductForm({
                     </Stack>
 
 
-
-                    <Divider />
-
-
-
-                    <Stack
-
-                        direction="row"
-
-                        spacing={2}
-
-                        alignItems="center"
-
-                    >
-
-
-                        <DensityMediumIcon
-
-                            color="secondary"
-
-                        />
-
-
-                        <Box>
-
-
-                            <Typography
-
-                                variant="caption"
-
-                                color="text.secondary"
-
-                            >
-
-                                Плотность
-
-                            </Typography>
-
-
-                            <Typography
-
-                                variant="h6"
-
-                            >
-
-                                {form.density
-                                    ? `${form.density}`
-                                    : "—"
-                                }
-
-                            </Typography>
-
-
-                        </Box>
-
-
-                    </Stack>
-
-
                 </Stack>
 
 
@@ -240,25 +180,7 @@ export default function ProductForm({
 
 
 
-            <TextField
-
-                label="Плотность"
-
-                value={form.density}
-
-                fullWidth
-
-                type="number"
-
-                onChange={
-                    e =>
-                        handleChange(
-                            "density",
-                            e.target.value
-                        )
-                }
-
-            />
+            
 
 
         </Stack>

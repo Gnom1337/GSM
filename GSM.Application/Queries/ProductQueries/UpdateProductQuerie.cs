@@ -11,6 +11,5 @@ namespace GSM.Application.Queries.ProductQueries
     {
         public int ProductId { get; set; }
         public string Name { get; set; }
-        public double Density { get; set; }
     }
 }

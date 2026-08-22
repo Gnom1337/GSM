@@ -15,6 +15,7 @@ import InventoryIcon from "@mui/icons-material/Inventory";
 import PercentIcon from "@mui/icons-material/Percent";
 import LinearProgress from "@mui/material/LinearProgress";
 import axios from "axios";
+import DensityMediumIcon from '@mui/icons-material/DensityMedium';
 import { useEffect, useState } from "react";
 export default function TankForm({
     value,
@@ -35,6 +36,7 @@ export default function TankForm({
         capacityLiters: "",
 
         productId: "",
+        density: "",
 
         curentVolumeLiters: ""
 
@@ -81,7 +83,7 @@ export default function TankForm({
                 productId:
                     value.productId ?? "",
 
-
+                density: value.density ?? "",
                 curentVolumeLiters:
                     value.curentVolumeLiters ?? ""
 
@@ -292,6 +294,62 @@ export default function TankForm({
 
                     </Stack>
                     <Divider />
+
+
+
+                    <Stack
+
+                        direction="row"
+
+                        spacing={2}
+
+                        alignItems="center"
+
+                    >
+
+
+                        <DensityMediumIcon
+
+                            color="secondary"
+
+                        />
+
+
+                        <Box>
+
+
+                            <Typography
+
+                                variant="caption"
+
+                                color="text.secondary"
+
+                            >
+
+                                Плотность
+
+                            </Typography>
+
+
+                            <Typography
+
+                                variant="h6"
+
+                            >
+
+                                {form.density
+                                    ? `${form.density}`
+                                    : "—"
+                                }
+
+                            </Typography>
+
+
+                        </Box>
+
+
+                    </Stack>
+                    <Divider />
                     <Stack
                         direction="row"
                         spacing={2}
@@ -428,7 +486,25 @@ export default function TankForm({
 
             </TextField>
 
+            <TextField
 
+                label="Плотность"
+
+                value={form.density}
+
+                fullWidth
+
+                type="number"
+
+                onChange={
+                    e =>
+                        handleChange(
+                            "density",
+                            e.target.value
+                        )
+                }
+
+            />
 
 
 

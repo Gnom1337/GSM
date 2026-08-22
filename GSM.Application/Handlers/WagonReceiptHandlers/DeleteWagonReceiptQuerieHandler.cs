@@ -21,9 +21,14 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
         {
             var wagonReceipt = await _unitOfWork.WagonReceiptRepository.GetById(request.Id);
             if (wagonReceipt != null)
-            {
-                var tank = await _unitOfWork.TankRepository.GetById(wagonReceipt.TankId);
-                tank.CurentVolumeLiters -= wagonReceipt.VolumeActualLiters;
+            { 
+                if (wagonReceipt.Status == "Отгружен")
+                {
+                    var tank = await _unitOfWork.TankRepository.GetById(wagonReceipt.TankId);
+                    tank.CurentVolumeLiters -= wagonReceipt.VolumeActualLiters;
+                    await _unitOfWork.TankRepository.UpdateAsync(tank);
+                }
+                
                 var result = _unitOfWork.WagonReceiptRepository.Delete(wagonReceipt);
                 await _unitOfWork.SaveChangesAsync();
                 return new BaseDeleteResponse { Status = "Success", Message = "Запись успешно удалена" };

@@ -24,6 +24,7 @@ namespace GSM.Application.Handlers.TankHandlers
                     CurentVolumeLiters = request.CurentVolumeLiters,
                     Product = product,
                     TankNumber = request.TankNumber,
+                    Density = request.Density,
                 });
                 await _unitOfWork.SaveChangesAsync();
                 return new BaseResponse<Tank>

@@ -20,9 +20,12 @@ namespace GSM.Application.Handlers.DispatchHandlers
         public async Task<BaseDeleteResponse> Handle(BaseDeleteQuerie<Dispatch> request, CancellationToken cancellationToken)
         {
             var entity = await _unitOfWork.DispatchRepository.GetById(request.Id);
-            var tank = await _unitOfWork.TankRepository.GetById(entity.TankId);
-            tank.CurentVolumeLiters += entity.VolumeInvoiceLiters;
-            await _unitOfWork.TankRepository.UpdateAsync(tank);
+            if (entity.Status == "Отгружен")
+            {
+                var tank = await _unitOfWork.TankRepository.GetById(entity.TankId);
+                tank.CurentVolumeLiters += entity.VolumeInvoiceLiters;
+                await _unitOfWork.TankRepository.UpdateAsync(tank);
+            }
             var result = _unitOfWork.DispatchRepository.Delete(entity);
             await _unitOfWork.SaveChangesAsync();
             return new BaseDeleteResponse { Status = result.Status, Message = result.Message };

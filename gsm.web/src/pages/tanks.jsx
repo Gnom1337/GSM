@@ -79,7 +79,11 @@ export default function TanksPage() {
             flex: 1
         },
 
-
+        {
+            field: "density",
+            headerName: "Плотность",
+            flex: 0.6
+        },
         {
             field: "curentVolumeLiters",
             headerName: "Остаток",
