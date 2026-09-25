@@ -14,7 +14,11 @@
     </PackageReference>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="10.2.3" />
   </ItemGroup>
-
+	<ItemGroup>
+		<None Update="Services\Reports\Tatneft_Logo.png">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\GSM.Application\GSM.Application.csproj" />
     <ProjectReference Include="..\GSM.Infrastructure\GSM.Infrastructure.csproj" />

@@ -215,11 +215,17 @@ export default function UserForm({
                     <MenuItem value="Operator">
                         Оператор
                     </MenuItem>
-                    <MenuItem value="Warehouse_keeper">
-                        Кладовщик
+                    <MenuItem value="Master">
+                         Мастер
                     </MenuItem>
                     <MenuItem value="Manager">
                         Менеджер
+                    </MenuItem>
+                    <MenuItem value="Head_of_the_oil_depot">
+                        Начальник нефтебазы
+                    </MenuItem>
+                    <MenuItem value="Head_of_the_Logistics_Department">
+                        Начальник логистического отдела
                     </MenuItem>
                 </Select>
 

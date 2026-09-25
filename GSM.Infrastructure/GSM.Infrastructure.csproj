@@ -23,13 +23,13 @@
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.5" />
     <PackageReference Include="QuestPDF" Version="2026.7.2" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\GSM.Application\GSM.Application.csproj" />
-    <ProjectReference Include="..\GSM.Domain\GSM.Domain.csproj" />
-  </ItemGroup>
 	<ItemGroup>
 		<None Update="Services\Reports\Tatneft_Logo.png">
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GSM.Application\GSM.Application.csproj" />
+    <ProjectReference Include="..\GSM.Domain\GSM.Domain.csproj" />
+  </ItemGroup>
 </Project>

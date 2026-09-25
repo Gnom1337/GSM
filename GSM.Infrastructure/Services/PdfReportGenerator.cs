@@ -2,6 +2,9 @@
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 public class PdfReportGenerator
 {
@@ -15,73 +18,169 @@ public class PdfReportGenerator
             {
                 page.Size(PageSizes.A4);
 
-                page.MarginTop(30);
+                // Поля оставлены небольшими, чтобы сохранить полезную область
+                // и при этом приблизиться к исходному фирменному бланку.
+                page.MarginTop(25);
                 page.MarginBottom(30);
-                page.MarginLeft(30);
-                page.MarginRight(30);
-
+                page.MarginLeft(35);
+                page.MarginRight(35);
 
                 // =====================================================
-                // HEADER
+                // HEADER — ШАБЛОН БЛАНКА
                 // =====================================================
 
                 page.Header()
                     .Column(header =>
                     {
+                        // =====================================================
+                        // ФИРМЕННАЯ ШАПКА
+                        // Русский текст — слева.
+                        // Татарский текст — справа.
+                        // =====================================================
+
                         header.Item()
+                            .PaddingTop(8)
                             .Row(row =>
                             {
-                                // ЛОГОТИП
+                                // -------------------------------------------------
+                                // ЛЕВАЯ КОЛОНКА — РУССКИЙ ТЕКСТ
+                                // -------------------------------------------------
+                                row.RelativeItem()
+                                    .AlignLeft()
+                                    .Column(left =>
+                                    {
+                                        left.Item()
+                                            .Text("ПАО «ТАТНЕФТЬ»")
+                                            .FontSize(11)
+                                            .Bold();
+
+                                        left.Item()
+                                            .Text("им. В.Д. Шашина")
+                                            .FontSize(10)
+                                            .Bold();
+
+                                        left.Item()
+                                            .PaddingTop(16)
+                                            .Text("УПРАВЛЕНИЕ")
+                                            .FontSize(10)
+                                            .Bold();
+
+                                        left.Item()
+                                            .Text("ПО РЕАЛИЗАЦИИ")
+                                            .FontSize(10)
+                                            .Bold();
+
+                                        left.Item()
+                                            .Text("НЕФТИ И НЕФТЕПРОДУКТОВ")
+                                            .FontSize(10)
+                                            .Bold();
+
+                                        left.Item()
+                                            .PaddingTop(18)
+                                            .Text("ул. Ленина, 75, г. Альметьевск,")
+                                            .FontSize(8.5f);
+
+                                        left.Item()
+                                            .Text("Республика Татарстан, 423450")
+                                            .FontSize(8.5f);
+                                    });
+
+                                // -------------------------------------------------
+                                // ЦЕНТР — ЛОГОТИП
+                                // -------------------------------------------------
                                 row.ConstantItem(100)
-                                    .Height(55)
+                                    .Height(70)
+                                    .AlignCenter()
                                     .AlignMiddle()
                                     .Image(GetLogoPath());
 
-
-                                // ЗАГОЛОВОК
+                                // -------------------------------------------------
+                                // ПРАВАЯ КОЛОНКА — ТАТАРСКИЙ ТЕКСТ
+                                // -------------------------------------------------
                                 row.RelativeItem()
-                                    .AlignMiddle()
-                                    .AlignCenter()
-                                    .Text(title)
-                                    .FontSize(20)
-                                    .Bold();
+                                    .AlignRight()
+                                    .Column(right =>
+                                    {
+                                        right.Item()
+                                            .AlignRight()
+                                            .Text("В.Д. Шашин исемендәге")
+                                            .FontSize(10)
+                                            .Bold();
 
+                                        right.Item()
+                                            .AlignRight()
+                                            .Text("«ТАТНЕФТЬ» ААҖ")
+                                            .FontSize(10)
+                                            .Bold();
 
-                                // Чтобы заголовок был по центру страницы
-                                row.ConstantItem(100);
+                                        right.Item()
+                                            .PaddingTop(16)
+                                            .AlignRight()
+                                            .Text("НЕФТЬ ҺӘМ НЕФТЬ")
+                                            .FontSize(10)
+                                            .Bold();
+
+                                        right.Item()
+                                            .AlignRight()
+                                            .Text("ПРОДУКТЛАРЫН САТУ")
+                                            .FontSize(10)
+                                            .Bold();
+
+                                        right.Item()
+                                            .AlignRight()
+                                            .Text("ИДАРӘСЕ")
+                                            .FontSize(10)
+                                            .Bold();
+
+                                        right.Item()
+                                            .PaddingTop(18)
+                                            .AlignRight()
+                                            .Text("Ленин ур., 75, Әлмәт шәһәре,")
+                                            .FontSize(8.5f);
+
+                                        right.Item()
+                                            .AlignRight()
+                                            .Text("Татарстан Республикасы, 423450")
+                                            .FontSize(8.5f);
+                                    });
                             });
 
-
+                        // Разделитель шапки
                         header.Item()
-                            .PaddingTop(10)
+                            .PaddingTop(18)
                             .LineHorizontal(1)
-                            .LineColor(Colors.Grey.Medium);
-                    });
+                            .LineColor(Colors.Grey.Darken1);
 
+                        // Название конкретного отчёта
+                        header.Item()
+                            .PaddingTop(12)
+                            .PaddingBottom(4)
+                            .AlignCenter()
+                            .Text(title)
+                            .FontSize(18)
+                            .Bold();
+                    });
 
                 // =====================================================
                 // CONTENT
                 // =====================================================
 
                 page.Content()
-                    .PaddingTop(20)
+                    .PaddingTop(12)
                     .Element(content);
-
 
                 // =====================================================
                 // FOOTER
                 // =====================================================
 
                 page.Footer()
-                    .PaddingTop(10)
+                    .PaddingTop(8)
                     .AlignCenter()
                     .Text(text =>
                     {
-                        text.Span(
-                            $"Сформировано: {DateTime.Now:dd.MM.yyyy HH:mm}"
-                        )
-                        .FontSize(8)
-                        .FontColor(Colors.Grey.Darken1);
+                        text.Span($"Сформировано: {DateTime.Now:dd.MM.yyyy HH:mm}")
+                            .FontSize(8)
+                            .FontColor(Colors.Grey.Darken1);
 
                         text.Span("   |   Страница ")
                             .FontSize(8)
@@ -99,25 +198,8 @@ public class PdfReportGenerator
             });
         });
 
-
         return document.GeneratePdf();
     }
-
-
-    // =============================================================
-    // LOGO
-    // =============================================================
-
-    private static string GetLogoPath()
-    {
-        return Path.Combine(
-            AppContext.BaseDirectory,
-            "Services",
-            "Reports",
-            "Tatneft_Logo.png"
-        );
-    }
-
 
     // =============================================================
     // DAILY BALANCE
@@ -141,18 +223,10 @@ public class PdfReportGenerator
                         c.RelativeColumn(1.5f);
                     });
 
-
-                    // HEADER
-
                     table.Header(h =>
                     {
-                        h.Cell()
-                            .Element(HeaderCell)
-                            .Text("Резервуар");
-
-                        h.Cell()
-                            .Element(HeaderCell)
-                            .Text("Продукт");
+                        h.Cell().Element(HeaderCell).Text("Резервуар");
+                        h.Cell().Element(HeaderCell).Text("Продукт");
 
                         h.Cell()
                             .Element(HeaderCell)
@@ -170,9 +244,6 @@ public class PdfReportGenerator
                             .Text("Остаток");
                     });
 
-
-                    // DATA
-
                     foreach (var x in data)
                     {
                         table.Cell()
@@ -185,26 +256,19 @@ public class PdfReportGenerator
 
                         table.Cell()
                             .Element(NumberCell)
-                            .Text(
-                                $"{x.TotalReceived:N0} л"
-                            );
+                            .Text($"{x.TotalReceived:N0} л");
 
                         table.Cell()
                             .Element(NumberCell)
-                            .Text(
-                                $"{x.TotalDispatched:N0} л"
-                            );
+                            .Text($"{x.TotalDispatched:N0} л");
 
                         table.Cell()
                             .Element(NumberCell)
-                            .Text(
-                                $"{x.ClosingVolumeActual:N0} л"
-                            );
+                            .Text($"{x.ClosingVolumeActual:N0} л");
                     }
                 });
             });
     }
-
 
     // =============================================================
     // TURNOVER
@@ -227,16 +291,10 @@ public class PdfReportGenerator
                         c.RelativeColumn(1.5f);
                     });
 
-
                     table.Header(h =>
                     {
-                        h.Cell()
-                            .Element(HeaderCell)
-                            .Text("Продукт");
-
-                        h.Cell()
-                            .Element(HeaderCell)
-                            .Text("Резервуар");
+                        h.Cell().Element(HeaderCell).Text("Продукт");
+                        h.Cell().Element(HeaderCell).Text("Резервуар");
 
                         h.Cell()
                             .Element(HeaderCell)
@@ -248,7 +306,6 @@ public class PdfReportGenerator
                             .AlignRight()
                             .Text("Расход");
                     });
-
 
                     foreach (var x in data)
                     {
@@ -262,20 +319,15 @@ public class PdfReportGenerator
 
                         table.Cell()
                             .Element(NumberCell)
-                            .Text(
-                                $"{x.ReceivedLiters:N0} л"
-                            );
+                            .Text($"{x.ReceivedLiters:N0} л");
 
                         table.Cell()
                             .Element(NumberCell)
-                            .Text(
-                                $"{x.DispatchedLiters:N0} л"
-                            );
+                            .Text($"{x.DispatchedLiters:N0} л");
                     }
                 });
             });
     }
-
 
     // =============================================================
     // LOSS
@@ -298,16 +350,10 @@ public class PdfReportGenerator
                         c.RelativeColumn(1.5f);
                     });
 
-
                     table.Header(h =>
                     {
-                        h.Cell()
-                            .Element(HeaderCell)
-                            .Text("Дата");
-
-                        h.Cell()
-                            .Element(HeaderCell)
-                            .Text("Резервуар");
+                        h.Cell().Element(HeaderCell).Text("Дата");
+                        h.Cell().Element(HeaderCell).Text("Резервуар");
 
                         h.Cell()
                             .Element(HeaderCell)
@@ -320,14 +366,11 @@ public class PdfReportGenerator
                             .Text("Потери");
                     });
 
-
                     foreach (var x in data)
                     {
                         table.Cell()
                             .Element(DataCell)
-                            .Text(
-                                x.Date.ToString("dd.MM.yyyy")
-                            );
+                            .Text(x.Date.ToString("dd.MM.yyyy"));
 
                         table.Cell()
                             .Element(DataCell)
@@ -335,27 +378,35 @@ public class PdfReportGenerator
 
                         table.Cell()
                             .Element(NumberCell)
-                            .Text(
-                                $"{x.CalculatedVolume:N0} л"
-                            );
+                            .Text($"{x.CalculatedVolume:N0} л");
 
                         table.Cell()
                             .Element(NumberCell)
-                            .Text(
-                                $"{x.LossLiters:N0} л"
-                            );
+                            .Text($"{x.LossLiters:N0} л");
                     }
                 });
             });
     }
 
+    // =============================================================
+    // LOGO
+    // =============================================================
+
+    private static string GetLogoPath()
+    {
+        return Path.Combine(
+            AppContext.BaseDirectory,
+            "Services",
+            "Reports",
+            "Tatneft_Logo.png"
+        );
+    }
 
     // =============================================================
     // TABLE STYLES
     // =============================================================
 
-    private static IContainer HeaderCell(
-        IContainer container)
+    private static IContainer HeaderCell(IContainer container)
     {
         return container
             .Background(Colors.Grey.Lighten2)
@@ -366,9 +417,7 @@ public class PdfReportGenerator
             .AlignMiddle();
     }
 
-
-    private static IContainer DataCell(
-        IContainer container)
+    private static IContainer DataCell(IContainer container)
     {
         return container
             .Border(1)
@@ -378,9 +427,7 @@ public class PdfReportGenerator
             .AlignMiddle();
     }
 
-
-    private static IContainer NumberCell(
-        IContainer container)
+    private static IContainer NumberCell(IContainer container)
     {
         return container
             .Border(1)
@@ -391,4 +438,3 @@ public class PdfReportGenerator
             .AlignRight();
     }
 }
-
