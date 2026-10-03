@@ -27,12 +27,10 @@ namespace GSM.Application.Handlers.TankMeasurmentHandlers
         public async Task<BaseResponse<TankMeasurement>> Handle(UpdateTankMeasurmentQuerie request, CancellationToken cancellationToken)
         {
             var tankMeasurement = await _unitOfWork.TankMeasurementRepository.GetById(request.TankMeasurementsId);
-            var tank = await _unitOfWork.TankRepository.GetById(request.TankId);
             var userId = _httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.NameIdentifier);
             var user = await _userRepository.GetById(int.Parse(userId.Value));
             if (tankMeasurement != null)
             {
-                tankMeasurement.Tank = tank;
                 tankMeasurement.VolumeLiters = request.VolumeLiters;
                 tankMeasurement.User = user;
                 tankMeasurement.MeasuredAt = request.MeasuredAt;

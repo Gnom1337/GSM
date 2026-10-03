@@ -28,6 +28,7 @@ export default function TankMeasurementForm({
 }) {
     const { user } = useContext(AuthContext);
     const [form, setForm] = useState({
+        tankMeasurementsId: null,
         measuredAt: "",
         volumeLiters: "",
         note: "",
@@ -40,7 +41,7 @@ export default function TankMeasurementForm({
         if (value) {
 
             setForm({
-
+                tankMeasurementsId: value.tankMeasurementsId,
                 measuredAt: value.measuredAt ?? "",
                 volumeLiters: value.volumeLiters ?? "",
                 note: value.note ?? "",
@@ -228,7 +229,7 @@ export default function TankMeasurementForm({
     return (
 
         <Stack spacing={2}>
-
+            
             <TextField
                 label="Дата замера"
                 type="datetime-local"

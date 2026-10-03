@@ -17,11 +17,11 @@ import TankStatusCards from "../components/TankStatusCards";
 export default function DashboardPage() {
 
     const [from, setFrom] = useState(
-        dayjs().subtract(30, "day")
+        dayjs().subtract(1, 'month').startOf('month')
     );
 
     const [to, setTo] = useState(
-        dayjs().add(1, "day")
+        dayjs()
     );
 
     const [dashboard, setDashboard] = useState({});

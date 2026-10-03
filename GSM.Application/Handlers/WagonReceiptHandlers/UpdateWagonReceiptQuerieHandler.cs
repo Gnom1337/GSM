@@ -58,7 +58,7 @@ namespace GSM.Application.Handlers.WagonReceiptHandlers
                 wagonReceipt.VolumeActualLiters= request.VolumeActualLiters;
                 wagonReceipt.ReceiptDate= request.ReceiptDate;
                 wagonReceipt.VolumeInvoiceLiters= request.VolumeInvoiceLiters;
-                wagonReceipt.DiscrepancyLiters = request.VolumeInvoiceLiters = request.VolumeActualLiters;
+                wagonReceipt.DiscrepancyLiters = request.VolumeInvoiceLiters - request.VolumeActualLiters;
                 wagonReceipt.Status = request.Status;
                 var result = await _unitOfWork.WagonReceiptRepository.UpdateAsync(wagonReceipt);
                 await _unitOfWork.SaveChangesAsync();

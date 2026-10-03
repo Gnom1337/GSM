@@ -36,7 +36,7 @@ const measurementsApi = {
     update: async (measurement) => {
 
         const { data } = await http.put(
-            `/Measurements/Update/${measurement.measurementId}`,
+            `/Measurements/Update/${measurement.tankMeasurementsId}`,
             measurement
         );
 
