@@ -5,12 +5,14 @@ using QuestPDF.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 public class PdfReportGenerator
 {
     private byte[] Build(
-        string title,
-        Action<IContainer> content)
+    string title,
+    string period,
+    Action<IContainer> content)
     {
         var document = Document.Create(doc =>
         {
@@ -174,26 +176,39 @@ public class PdfReportGenerator
                 // =====================================================
 
                 page.Footer()
-                    .PaddingTop(8)
-                    .AlignCenter()
-                    .Text(text =>
+                    .Column(footer =>
                     {
-                        text.Span($"Сформировано: {DateTime.Now:dd.MM.yyyy HH:mm}")
-                            .FontSize(8)
-                            .FontColor(Colors.Grey.Darken1);
+                        // Дата или период выбранный пользователем
+                        footer.Item()
+                            .AlignCenter()
+                            .Text(period)
+                            .FontSize(9)
+                            .Bold();
 
-                        text.Span("   |   Страница ")
-                            .FontSize(8)
-                            .FontColor(Colors.Grey.Darken1);
+                        // Информация о формировании и страницы
+                        footer.Item()
+                            .PaddingTop(5)
+                            .AlignCenter()
+                            .Text(text =>
+                            {
+                                text.Span(
+                                    $"Сформировано: {DateTime.Now:dd.MM.yyyy HH:mm}")
+                                    .FontSize(8)
+                                    .FontColor(Colors.Grey.Darken1);
 
-                        text.CurrentPageNumber()
-                            .FontSize(8);
+                                text.Span("   |   Страница ")
+                                    .FontSize(8)
+                                    .FontColor(Colors.Grey.Darken1);
 
-                        text.Span(" из ")
-                            .FontSize(8);
+                                text.CurrentPageNumber()
+                                    .FontSize(8);
 
-                        text.TotalPages()
-                            .FontSize(8);
+                                text.Span(" из ")
+                                    .FontSize(8);
+
+                                text.TotalPages()
+                                    .FontSize(8);
+                            });
                     });
             });
         });
@@ -206,10 +221,12 @@ public class PdfReportGenerator
     // =============================================================
 
     public byte[] GenerateDailyBalance(
-        List<DailyBalanceDto> data)
+    List<DailyBalanceDto> data,
+    string period)
     {
         return Build(
             "Суточный баланс резервуаров",
+            $"Дата: {period}",
             container =>
             {
                 container.Table(table =>
@@ -275,10 +292,12 @@ public class PdfReportGenerator
     // =============================================================
 
     public byte[] GenerateTurnover(
-        List<TurnoverDto> data)
+    List<TurnoverDto> data,
+    string period)
     {
         return Build(
             "Оборотная ведомость",
+            $"Период: {period}",
             container =>
             {
                 container.Table(table =>
@@ -334,10 +353,12 @@ public class PdfReportGenerator
     // =============================================================
 
     public byte[] GenerateLoss(
-        List<LossDto> data)
+    List<LossDto> data,
+    string period)
     {
         return Build(
             "Отчет по потерям",
+            $"Период: {period}",
             container =>
             {
                 container.Table(table =>

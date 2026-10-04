@@ -152,7 +152,9 @@ namespace GSM.Infrastructure.Services
             }
 
 
-            return _pdf.GenerateDailyBalance(result);
+            return _pdf.GenerateDailyBalance(
+    result,
+    $"{date:dd.MM.yyyy}");
         }
 
 
@@ -221,7 +223,9 @@ namespace GSM.Infrastructure.Services
             }
 
 
-            return _pdf.GenerateTurnover(result);
+            return _pdf.GenerateTurnover(
+    result,
+    $"{from:dd.MM.yyyy} — {to:dd.MM.yyyy}");
         }
 
 
@@ -342,7 +346,9 @@ namespace GSM.Infrastructure.Services
             }
 
 
-            return _pdf.GenerateLoss(result);
+            return _pdf.GenerateLoss(
+    result,
+    $"{from:dd.MM.yyyy} — {to:dd.MM.yyyy}");
         }
     }
 }
